@@ -14,7 +14,7 @@ import java.util.List;
 @RequestMapping("api/v1/users")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     public UserController(UserService userService) {
@@ -28,12 +28,7 @@ public class UserController {
 
     @GetMapping("/{login}")
     public ResponseEntity<User> getByLogin(@PathVariable String login) {
-        return new ResponseEntity<>(userService.getByLogin(login), HttpStatus.OK);
-    }
-
-    @PostMapping
-    public ResponseEntity<User> create(@RequestBody User user) {
-        return new ResponseEntity<>(userService.create(user), HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.findByLogin(login), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -43,7 +38,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<User> deleteAlbum(@PathVariable("id") Long id) {
+    public ResponseEntity<User> delete(@PathVariable("id") Long id) {
         userService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

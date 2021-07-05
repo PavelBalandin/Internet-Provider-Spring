@@ -25,9 +25,11 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user")
     private List<TariffUser> tariffUserList;
 
-    @OneToOne
-    @JoinColumn(name = "role_id", referencedColumnName = "id")
-    private Role role;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "roles_users",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private List<Role> roleList;
 
     @OneToOne
     @JoinColumn(name = "status_id", referencedColumnName = "id")
