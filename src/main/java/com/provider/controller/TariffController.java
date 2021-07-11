@@ -1,6 +1,7 @@
 package com.provider.controller;
 
 import com.provider.entity.Tariff;
+import com.provider.security.JwtProvider;
 import com.provider.service.TariffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,10 +18,12 @@ import java.util.List;
 public class TariffController {
 
     private final TariffService tariffService;
+    private final JwtProvider jwtProvider;
 
     @Autowired
-    public TariffController(TariffService tariffService) {
+    public TariffController(TariffService tariffService, JwtProvider jwtProvider) {
         this.tariffService = tariffService;
+        this.jwtProvider = jwtProvider;
     }
 
     @GetMapping
@@ -43,8 +46,9 @@ public class TariffController {
         return new ResponseEntity<>(tariffService.getTariffListByServiceId(id), HttpStatus.OK);
     }
 
-    @GetMapping("/user/{id}")
-    public ResponseEntity<List<Tariff>> getTariffListByUserId(@PathVariable("id") Long id) {
+    @GetMapping("/user")
+    public ResponseEntity<List<Tariff>> getTariffListByUserId(@RequestHeader(name = "Authorization") String token) {
+        Long id = jwtProvider.getUserIdFromToken(token);
         return new ResponseEntity<>(tariffService.getTariffListByUserId(id), HttpStatus.OK);
     }
 
@@ -64,8 +68,9 @@ public class TariffController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/order/{id}")
-    public ResponseEntity<BigDecimal> makeOrder(@PathVariable("id") Long id, @RequestBody List<Tariff> tariffList) {
-        return new ResponseEntity<>(tariffService.makeOrder(id, tariffList), HttpStatus.OK);
+    @PostMapping("/order")
+    public ResponseEntity<BigDecimal> makeOrder(@RequestBody List<Tariff> tariffList, @RequestHeader(name = "Authorization") String token) {
+        Long id = jwtProvider.getUserIdFromToken(token);
+        return new ResponseEntity<>(tariffService.makeOrder(id, tariffList), HttpStatus.CREATED);
     }
 }

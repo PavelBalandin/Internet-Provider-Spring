@@ -29,7 +29,8 @@ public class PaymentController {
     }
 
     @PostMapping
-    public ResponseEntity<Payment> create(@RequestBody Payment payment) {
+    public ResponseEntity<Payment> create(@RequestBody Payment payment, @RequestHeader(name = "Authorization") String token) {
+        payment.getUser().setId(jwtProvider.getUserIdFromToken(token));
         return new ResponseEntity<>(paymentService.create(payment), HttpStatus.CREATED);
     }
 }

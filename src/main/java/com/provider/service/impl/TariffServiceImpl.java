@@ -1,7 +1,9 @@
 package com.provider.service.impl;
 
 import com.provider.entity.*;
+import com.provider.exception.NotEnoughFundsException;
 import com.provider.exception.ResourceNotFoundException;
+import com.provider.exception.ResourcesAlreadyExistsException;
 import com.provider.repository.PaymentRepository;
 import com.provider.repository.TariffRepository;
 import com.provider.repository.TariffUserRepository;
@@ -91,24 +93,28 @@ public class TariffServiceImpl implements TariffService {
         BigDecimal tariffSum = tariffRepository.findTariffsSum(tariffList.stream().map(BaseEntity::getId).collect(Collectors.toList()));
         BigDecimal userSum = paymentRepository.getTotalUserSum(id);
         List<Tariff> userTariffs = tariffRepository.findByUserId(user.getId());
-        if (userSum.compareTo(tariffSum) >= 0
-                && Collections.disjoint(
-                userTariffs.stream().map(BaseEntity::getId).collect(Collectors.toList()),
-                tariffList.stream().map(BaseEntity::getId).collect(Collectors.toList())
-        )) {
-            tariffList.forEach(tariff -> {
-                TariffUser tariffUser = new TariffUser();
-                tariffUser.setUser(user);
-                tariffUser.setTariff(tariff);
-                tariffUser.setDateStart(LocalDateTime.now());
-                tariffUser.setDateEnd(LocalDateTime.now().plusDays(tariff.getDuration()));
-                tariffUserRepository.save(tariffUser);
-            });
+        if (userSum.compareTo(tariffSum) >= 0) {
+            if (Collections.disjoint(
+                    userTariffs.stream().map(BaseEntity::getId).collect(Collectors.toList()),
+                    tariffList.stream().map(BaseEntity::getId).collect(Collectors.toList()))) {
+                tariffList.forEach(tariff -> {
+                    TariffUser tariffUser = new TariffUser();
+                    tariffUser.setUser(user);
+                    tariffUser.setTariff(tariff);
+                    tariffUser.setDateStart(LocalDateTime.now());
+                    tariffUser.setDateEnd(LocalDateTime.now().plusDays(tariff.getDuration()));
+                    tariffUserRepository.save(tariffUser);
+                });
 
-            Payment payment = new Payment();
-            payment.setUser(user);
-            payment.setPayment(tariffSum.negate());
-            paymentRepository.save(payment);
+                Payment payment = new Payment();
+                payment.setUser(user);
+                payment.setPayment(tariffSum.negate());
+                paymentRepository.save(payment);
+            } else {
+                throw new ResourcesAlreadyExistsException();
+            }
+        } else {
+            throw new NotEnoughFundsException("Not enough funds");
         }
         return userSum.subtract(tariffSum);
     }
