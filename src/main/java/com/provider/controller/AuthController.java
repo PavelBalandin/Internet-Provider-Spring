@@ -35,7 +35,7 @@ public class AuthController {
     @PostMapping("/auth")
     public ResponseEntity<Map<String, Object>> auth(@RequestBody AuthRequest request) {
         User userEntity = userService.findByLoginAndPassword(request.getLogin(), request.getPassword());
-        String token = jwtProvider.generateToken(userEntity.getLogin());
+        String token = jwtProvider.generateToken(userEntity);
         Map<String, Object> response = new HashMap<>();
         response.put("user", userEntity);
         response.put("token", token);

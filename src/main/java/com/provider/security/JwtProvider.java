@@ -1,11 +1,15 @@
 package com.provider.security;
 
+import com.provider.entity.User;
+import com.provider.exception.AccessDeniedException;
 import io.jsonwebtoken.*;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+
+import static org.springframework.util.StringUtils.hasText;
 
 @Log
 @Component
@@ -16,10 +20,11 @@ public class JwtProvider {
     @Value("${jwt.expired}")
     private long expired;
 
-    public String generateToken(String login) {
+    public String generateToken(User user) {
         Date now = new Date();
         return Jwts.builder()
-                .setSubject(login)
+                .setId(user.getId().toString())
+                .setSubject(user.getLogin())
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + expired))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
@@ -47,5 +52,15 @@ public class JwtProvider {
     public String getLoginFromToken(String token) {
         Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
         return claims.getSubject();
+    }
+
+    public Long getUserIdFromToken(String bearer) {
+        if (hasText(bearer) && bearer.startsWith("Bearer ")) {
+            String token = bearer.substring(7);
+            Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+            return Long.valueOf(claims.getId());
+        } else {
+            throw new AccessDeniedException();
+        }
     }
 }
