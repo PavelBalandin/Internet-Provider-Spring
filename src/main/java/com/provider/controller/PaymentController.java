@@ -21,7 +21,7 @@ public class PaymentController {
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<List<Payment>> getByUserId(@PathVariable Long id) {
+    public ResponseEntity<List<Payment>> getByUserId(@PathVariable Long id, @RequestHeader(name = "Authorization") String token) {
         return new ResponseEntity<>(paymentService.getByUserId(id), HttpStatus.OK);
     }
 

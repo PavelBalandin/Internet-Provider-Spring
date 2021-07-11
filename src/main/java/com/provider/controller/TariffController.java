@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @CrossOrigin
@@ -42,9 +43,14 @@ public class TariffController {
         return new ResponseEntity<>(tariffService.getTariffListByServiceId(id), HttpStatus.OK);
     }
 
+    @GetMapping("/user/{id}")
+    public ResponseEntity<List<Tariff>> getTariffListByUserId(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(tariffService.getTariffListByUserId(id), HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<Tariff> createTariff(@RequestBody Tariff tariff) {
-        return new ResponseEntity<>(tariffService.create(tariff), HttpStatus.OK);
+        return new ResponseEntity<>(tariffService.create(tariff), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -56,5 +62,10 @@ public class TariffController {
     public ResponseEntity<Tariff> deleteTariff(@PathVariable("id") Long id) {
         tariffService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/order/{id}")
+    public ResponseEntity<BigDecimal> makeOrder(@PathVariable("id") Long id, @RequestBody List<Tariff> tariffList) {
+        return new ResponseEntity<>(tariffService.makeOrder(id, tariffList), HttpStatus.OK);
     }
 }

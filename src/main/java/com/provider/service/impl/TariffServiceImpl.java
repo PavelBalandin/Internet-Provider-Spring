@@ -1,8 +1,11 @@
 package com.provider.service.impl;
 
-import com.provider.entity.Tariff;
+import com.provider.entity.*;
 import com.provider.exception.ResourceNotFoundException;
+import com.provider.repository.PaymentRepository;
 import com.provider.repository.TariffRepository;
+import com.provider.repository.TariffUserRepository;
+import com.provider.repository.UserRepository;
 import com.provider.service.TariffService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,16 +14,27 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TariffServiceImpl implements TariffService {
 
     private final TariffRepository tariffRepository;
+    private final UserRepository userRepository;
+    private final PaymentRepository paymentRepository;
+    private final TariffUserRepository tariffUserRepository;
 
     @Autowired
-    public TariffServiceImpl(TariffRepository tariffRepository) {
+    public TariffServiceImpl(TariffRepository tariffRepository, UserRepository userRepository, PaymentRepository paymentRepository, TariffUserRepository tariffUserRepository) {
         this.tariffRepository = tariffRepository;
+        this.userRepository = userRepository;
+        this.paymentRepository = paymentRepository;
+        this.tariffUserRepository = tariffUserRepository;
     }
 
     @Override
@@ -65,4 +79,38 @@ public class TariffServiceImpl implements TariffService {
     public List<Tariff> getTariffListByServiceId(Long id) {
         return tariffRepository.findByServiceId(id);
     }
+
+    @Override
+    public List<Tariff> getTariffListByUserId(Long id) {
+        return tariffRepository.findByUserId(id);
+    }
+
+    @Transactional
+    public BigDecimal makeOrder(Long id, List<Tariff> tariffList) {
+        User user = userRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+        BigDecimal tariffSum = tariffRepository.findTariffsSum(tariffList.stream().map(BaseEntity::getId).collect(Collectors.toList()));
+        BigDecimal userSum = paymentRepository.getTotalUserSum(id);
+        List<Tariff> userTariffs = tariffRepository.findByUserId(user.getId());
+        if (userSum.compareTo(tariffSum) >= 0
+                && Collections.disjoint(
+                userTariffs.stream().map(BaseEntity::getId).collect(Collectors.toList()),
+                tariffList.stream().map(BaseEntity::getId).collect(Collectors.toList())
+        )) {
+            tariffList.forEach(tariff -> {
+                TariffUser tariffUser = new TariffUser();
+                tariffUser.setUser(user);
+                tariffUser.setTariff(tariff);
+                tariffUser.setDateStart(LocalDateTime.now());
+                tariffUser.setDateEnd(LocalDateTime.now().plusDays(tariff.getDuration()));
+                tariffUserRepository.save(tariffUser);
+            });
+
+            Payment payment = new Payment();
+            payment.setUser(user);
+            payment.setPayment(tariffSum.negate());
+            paymentRepository.save(payment);
+        }
+        return userSum.subtract(tariffSum);
+    }
+
 }
