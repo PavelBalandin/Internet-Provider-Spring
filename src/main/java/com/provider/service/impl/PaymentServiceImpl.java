@@ -19,33 +19,8 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public List<Payment> getAll() {
-        return null;
-    }
-
-    @Override
-    public Payment findById(Long id) {
-        return null;
-    }
-
-    @Override
-    public Payment findByName(String name) {
-        return null;
-    }
-
-    @Override
     public Payment create(Payment payment) {
         return paymentRepository.save(payment);
-    }
-
-    @Override
-    public Payment update(Payment entity, Long id) {
-        return null;
-    }
-
-    @Override
-    public void delete(Long id) {
-
     }
 
     @Override

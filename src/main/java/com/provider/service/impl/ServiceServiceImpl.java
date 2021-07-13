@@ -10,7 +10,6 @@ import java.util.List;
 
 @org.springframework.stereotype.Service
 public class ServiceServiceImpl implements ServiceService {
-
     private final ServiceRepository serviceRepository;
 
     @Autowired
@@ -26,25 +25,5 @@ public class ServiceServiceImpl implements ServiceService {
     @Override
     public Service findById(Long id) {
         return serviceRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
-    }
-
-    @Override
-    public Service findByName(String name) {
-        return null;
-    }
-
-    @Override
-    public Service create(Service entity) {
-        return null;
-    }
-
-    @Override
-    public Service update(Service entity, Long id) {
-        return null;
-    }
-
-    @Override
-    public void delete(Long id) {
-
     }
 }

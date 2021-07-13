@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class TariffServiceImpl implements TariffService {
-
     private final TariffRepository tariffRepository;
     private final UserRepository userRepository;
     private final PaymentRepository paymentRepository;
@@ -52,11 +51,6 @@ public class TariffServiceImpl implements TariffService {
     @Override
     public Tariff findById(Long id) {
         return tariffRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
-    }
-
-    @Override
-    public Tariff findByName(String name) {
-        return null;
     }
 
     @Override

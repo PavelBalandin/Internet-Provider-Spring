@@ -20,7 +20,6 @@ import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
-
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -34,9 +33,6 @@ public class UserServiceImpl implements UserService {
         this.statusRepository = statusRepository;
     }
 
-    @Autowired
-
-
     @Override
     public List<User> getAll() {
         return userRepository.findAll();
@@ -45,11 +41,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Long id) {
         return userRepository.findById(id).orElseThrow(RuntimeException::new);
-    }
-
-    @Override
-    public User findByName(String name) {
-        return null;
     }
 
     @Override
@@ -77,7 +68,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Long id) {
-
+        User user = userRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+        userRepository.delete(user);
     }
 
     @Override
