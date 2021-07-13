@@ -1,19 +1,25 @@
 package com.provider.entity;
 
 import com.fasterxml.jackson.annotation.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "tariffs")
 @Embeddable
-public class Tariff extends BaseEntity {
+public class Tariff implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String name;
 
     private String description;

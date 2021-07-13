@@ -84,13 +84,13 @@ public class TariffServiceImpl implements TariffService {
     @Transactional
     public BigDecimal makeOrder(Long id, List<Tariff> tariffList) {
         User user = userRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
-        BigDecimal tariffSum = tariffRepository.findTariffsSum(tariffList.stream().map(BaseEntity::getId).collect(Collectors.toList()));
+        BigDecimal tariffSum = tariffRepository.findTariffsSum(tariffList.stream().map(Tariff::getId).collect(Collectors.toList()));
         BigDecimal userSum = paymentRepository.getTotalUserSum(id);
         List<Tariff> userTariffs = tariffRepository.findByUserId(user.getId());
         if (userSum.compareTo(tariffSum) >= 0) {
             if (Collections.disjoint(
-                    userTariffs.stream().map(BaseEntity::getId).collect(Collectors.toList()),
-                    tariffList.stream().map(BaseEntity::getId).collect(Collectors.toList()))) {
+                    userTariffs.stream().map(Tariff::getId).collect(Collectors.toList()),
+                    tariffList.stream().map(Tariff::getId).collect(Collectors.toList()))) {
                 tariffList.forEach(tariff -> {
                     TariffUser tariffUser = new TariffUser();
                     tariffUser.setUser(user);
