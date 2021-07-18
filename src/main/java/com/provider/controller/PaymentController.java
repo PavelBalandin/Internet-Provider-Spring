@@ -15,7 +15,9 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/payments")
 public class PaymentController {
+
     private final PaymentService paymentService;
+
     private final JwtProvider jwtProvider;
 
     @Autowired

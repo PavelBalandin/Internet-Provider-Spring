@@ -25,9 +25,13 @@ import java.util.stream.Collectors;
 
 @Service
 public class TariffServiceImpl implements TariffService {
+
     private final TariffRepository tariffRepository;
+
     private final UserRepository userRepository;
+
     private final PaymentRepository paymentRepository;
+
     private final TariffUserRepository tariffUserRepository;
 
     @Autowired
@@ -108,7 +112,7 @@ public class TariffServiceImpl implements TariffService {
                 throw new ResourcesAlreadyExistsException();
             }
         } else {
-            throw new NotEnoughFundsException("Not enough funds");
+            throw new NotEnoughFundsException();
         }
         return userSum.subtract(tariffSum);
     }

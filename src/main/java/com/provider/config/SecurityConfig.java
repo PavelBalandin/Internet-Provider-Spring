@@ -22,8 +22,12 @@ import java.util.Arrays;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
     private JwtFilter jwtFilter;
+
+    @Autowired
+    public SecurityConfig(JwtFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

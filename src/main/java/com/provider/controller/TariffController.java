@@ -20,6 +20,7 @@ import java.util.List;
 public class TariffController {
 
     private final TariffService tariffService;
+
     private final JwtProvider jwtProvider;
 
     @Autowired

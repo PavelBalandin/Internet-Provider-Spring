@@ -11,7 +11,9 @@ import java.util.stream.Collectors;
 public class CustomUserDetails implements UserDetails {
 
     private String login;
+
     private String password;
+
     private Collection<? extends GrantedAuthority> grantedAuthorities;
 
     public static CustomUserDetails fromUserToCustomUserDetails(User user) {

@@ -10,6 +10,7 @@ import java.util.List;
 
 @org.springframework.stereotype.Service
 public class ServiceServiceImpl implements ServiceService {
+
     private final ServiceRepository serviceRepository;
 
     @Autowired

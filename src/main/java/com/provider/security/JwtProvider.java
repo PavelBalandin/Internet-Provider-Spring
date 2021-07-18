@@ -14,6 +14,7 @@ import static org.springframework.util.StringUtils.hasText;
 @Log
 @Component
 public class JwtProvider {
+
     @Value("${jwt.secret})")
     private String jwtSecret;
 

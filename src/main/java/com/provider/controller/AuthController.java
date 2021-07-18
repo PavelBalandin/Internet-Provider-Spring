@@ -20,7 +20,9 @@ import java.util.Map;
 @CrossOrigin
 @RestController
 public class AuthController {
+
     private final UserService userService;
+
     private final JwtProvider jwtProvider;
 
     @Autowired
