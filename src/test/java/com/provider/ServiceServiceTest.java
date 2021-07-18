@@ -1,23 +1,41 @@
 package com.provider;
 
+import com.provider.entity.Service;
+import com.provider.repository.ServiceRepository;
 import com.provider.service.ServiceService;
+import com.provider.service.impl.ServiceServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import java.util.ArrayList;
+import java.util.List;
 
-@SpringBootTest
-@Sql(value = {"/create-tables.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(value = {"/drop-tables.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
 public class ServiceServiceTest {
 
-    @Autowired
-    private ServiceService serviceService;
+    @Mock
+    ServiceRepository serviceRepository;
+
+    ServiceService subject;
+
+    @BeforeEach
+    void setUp() {
+        subject = new ServiceServiceImpl(serviceRepository);
+    }
 
     @Test
-    public void shouldReturnServiceList() {
-        assertFalse(serviceService.getAll().isEmpty());
+    void findAll() {
+        List<Service> servicesExpected = new ArrayList<>();
+        when(serviceRepository.findAll()).thenReturn(servicesExpected);
+
+        List<Service> servicesActual = subject.getAll();
+
+        assertEquals(servicesExpected, servicesActual);
     }
 }
