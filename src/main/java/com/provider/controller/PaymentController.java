@@ -1,6 +1,8 @@
 package com.provider.controller;
 
+import com.provider.dto.PaymentDTO;
 import com.provider.entity.Payment;
+import com.provider.mapper.PaymentMapper;
 import com.provider.security.JwtProvider;
 import com.provider.service.PaymentService;
 import lombok.extern.log4j.Log4j2;
@@ -20,23 +22,27 @@ public class PaymentController {
 
     private final JwtProvider jwtProvider;
 
+    private final PaymentMapper paymentMapper;
+
     @Autowired
-    public PaymentController(PaymentService paymentService, JwtProvider jwtProvider) {
+    public PaymentController(PaymentService paymentService, JwtProvider jwtProvider, PaymentMapper paymentMapper) {
         this.paymentService = paymentService;
         this.jwtProvider = jwtProvider;
+        this.paymentMapper = paymentMapper;
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<Payment>> getByUserId(@RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<List<PaymentDTO>> getByUserId(@RequestHeader(name = "Authorization") String token) {
         log.trace("Getting payment list by user id");
         Long id = jwtProvider.getUserIdFromToken(token);
-        return new ResponseEntity<>(paymentService.getByUserId(id), HttpStatus.OK);
+        return new ResponseEntity<>(paymentMapper.listEntityToDTOList(paymentService.getByUserId(id)), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<Payment> create(@RequestBody Payment payment, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<PaymentDTO> create(@RequestBody PaymentDTO paymentDTO, @RequestHeader(name = "Authorization") String token) {
         log.trace("Creating payment");
+        Payment payment = paymentMapper.DTOtoEntity(paymentDTO);
         payment.getUser().setId(jwtProvider.getUserIdFromToken(token));
-        return new ResponseEntity<>(paymentService.create(payment), HttpStatus.CREATED);
+        return new ResponseEntity<>(paymentMapper.entityToDTO(paymentService.create(payment)), HttpStatus.CREATED);
     }
 }

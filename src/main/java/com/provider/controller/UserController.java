@@ -1,6 +1,8 @@
 package com.provider.controller;
 
+import com.provider.dto.UserDTO;
 import com.provider.entity.User;
+import com.provider.mapper.UserMapper;
 import com.provider.service.UserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,29 +19,31 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserMapper userMapper) {
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAll() {
+    public ResponseEntity<List<UserDTO>> getAll() {
         log.trace("Getting user list");
-        return new ResponseEntity<>(userService.getAll(), HttpStatus.OK);
+        return new ResponseEntity<>(userMapper.listEntityToDTOList(userService.getAll()), HttpStatus.OK);
     }
 
     @GetMapping("/{login}")
-    public ResponseEntity<User> getByLogin(@PathVariable String login) {
+    public ResponseEntity<UserDTO> getByLogin(@PathVariable String login) {
         log.trace("Getting user by login");
-        return new ResponseEntity<>(userService.findByLogin(login), HttpStatus.OK);
+        return new ResponseEntity<>(userMapper.entityToDTO(userService.findByLogin(login)), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> update(@RequestBody User user, @PathVariable("id") Long id) {
+    public ResponseEntity<UserDTO> update(@RequestBody UserDTO userDTO, @PathVariable("id") Long id) {
         log.trace("Updating user by login");
-        User userUpdated = userService.update(user, id);
-        return new ResponseEntity<>(userUpdated, HttpStatus.OK);
+        User userUpdated = userService.update(userMapper.DTOtoEntity(userDTO), id);
+        return new ResponseEntity<>(userMapper.entityToDTO(userUpdated), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

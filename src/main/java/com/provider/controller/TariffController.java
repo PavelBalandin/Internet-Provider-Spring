@@ -1,6 +1,8 @@
 package com.provider.controller;
 
+import com.provider.dto.TariffDTO;
 import com.provider.entity.Tariff;
+import com.provider.mapper.TariffMapper;
 import com.provider.security.JwtProvider;
 import com.provider.service.TariffService;
 import lombok.extern.log4j.Log4j2;
@@ -23,10 +25,13 @@ public class TariffController {
 
     private final JwtProvider jwtProvider;
 
+    private final TariffMapper tariffMapper;
+
     @Autowired
-    public TariffController(TariffService tariffService, JwtProvider jwtProvider) {
+    public TariffController(TariffService tariffService, JwtProvider jwtProvider, TariffMapper tariffMapper) {
         this.tariffService = tariffService;
         this.jwtProvider = jwtProvider;
+        this.tariffMapper = tariffMapper;
     }
 
     @GetMapping
@@ -41,34 +46,36 @@ public class TariffController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Tariff> getTariff(@PathVariable("id") Long id) {
+    public ResponseEntity<TariffDTO> getTariff(@PathVariable("id") Long id) {
         log.trace("Getting tariff by id");
-        return new ResponseEntity<>(tariffService.findById(id), HttpStatus.OK);
+        return new ResponseEntity<>(tariffMapper.entityToDTO(tariffService.findById(id)), HttpStatus.OK);
     }
 
     @GetMapping("/service/{id}")
-    public ResponseEntity<List<Tariff>> getTariffListByServiceId(@PathVariable("id") Long id) {
+    public ResponseEntity<List<TariffDTO>> getTariffListByServiceId(@PathVariable("id") Long id) {
         log.trace("Getting tariff list by service id");
-        return new ResponseEntity<>(tariffService.getTariffListByServiceId(id), HttpStatus.OK);
+        return new ResponseEntity<>(tariffMapper.listEntityToDTOList(tariffService.getTariffListByServiceId(id)), HttpStatus.OK);
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<Tariff>> getTariffListByUserId(@RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<List<TariffDTO>> getTariffListByUserId(@RequestHeader(name = "Authorization") String token) {
         log.trace("Getting tariff list by user id");
         Long id = jwtProvider.getUserIdFromToken(token);
-        return new ResponseEntity<>(tariffService.getTariffListByUserId(id), HttpStatus.OK);
+        return new ResponseEntity<>(tariffMapper.listEntityToDTOList(tariffService.getTariffListByUserId(id)), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<Tariff> createTariff(@RequestBody Tariff tariff) {
+    public ResponseEntity<TariffDTO> createTariff(@RequestBody TariffDTO tariffDTO) {
         log.trace("Creating tariff");
-        return new ResponseEntity<>(tariffService.create(tariff), HttpStatus.CREATED);
+        Tariff tariff = tariffMapper.DTOtoEntity(tariffDTO);
+        return new ResponseEntity<>(tariffMapper.entityToDTO(tariffService.create(tariff)), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Tariff> updateTariff(@PathVariable("id") Long id, @RequestBody Tariff tariff) {
+    public ResponseEntity<TariffDTO> updateTariff(@PathVariable("id") Long id, @RequestBody TariffDTO tariffDTO) {
         log.trace("Updating tariff");
-        return new ResponseEntity<>(tariffService.update(tariff, id), HttpStatus.OK);
+        Tariff tariff = tariffMapper.DTOtoEntity(tariffDTO);
+        return new ResponseEntity<>(tariffMapper.entityToDTO(tariffService.update(tariff, id)), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -79,9 +86,9 @@ public class TariffController {
     }
 
     @PostMapping("/order")
-    public ResponseEntity<BigDecimal> makeOrder(@RequestBody List<Tariff> tariffList, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<BigDecimal> makeOrder(@RequestBody List<TariffDTO> tariffDTOList, @RequestHeader(name = "Authorization") String token) {
         log.trace("Order making");
         Long id = jwtProvider.getUserIdFromToken(token);
-        return new ResponseEntity<>(tariffService.makeOrder(id, tariffList), HttpStatus.CREATED);
+        return new ResponseEntity<>(tariffService.makeOrder(id, tariffMapper.listDTOtoEntityList(tariffDTOList)), HttpStatus.CREATED);
     }
 }
