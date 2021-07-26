@@ -2,6 +2,7 @@ package com.provider.controller;
 
 import com.provider.dto.PaymentDTO;
 import com.provider.entity.Payment;
+import com.provider.entity.User;
 import com.provider.mapper.PaymentMapper;
 import com.provider.security.JwtProvider;
 import com.provider.service.PaymentService;
@@ -9,9 +10,14 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Log4j2
 @RestController
@@ -39,10 +45,10 @@ public class PaymentController {
     }
 
     @PostMapping
-    public ResponseEntity<PaymentDTO> create(@RequestBody PaymentDTO paymentDTO, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<PaymentDTO> create(@Valid @RequestBody PaymentDTO paymentDTO, @RequestHeader(name = "Authorization") String token) {
         log.trace("Creating payment");
         Payment payment = paymentMapper.DTOtoEntity(paymentDTO);
-        payment.getUser().setId(jwtProvider.getUserIdFromToken(token));
+        payment.setUser(User.builder().id(jwtProvider.getUserIdFromToken(token)).build());
         return new ResponseEntity<>(paymentMapper.entityToDTO(paymentService.create(payment)), HttpStatus.CREATED);
     }
 }

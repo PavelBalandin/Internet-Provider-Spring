@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Log4j2
@@ -19,6 +20,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+
     private final UserMapper userMapper;
 
     @Autowired
@@ -40,7 +42,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> update(@RequestBody UserDTO userDTO, @PathVariable("id") Long id) {
+    public ResponseEntity<UserDTO> update(@Valid @RequestBody UserDTO userDTO, @PathVariable("id") Long id) {
         log.trace("Updating user by login");
         User userUpdated = userService.update(userMapper.DTOtoEntity(userDTO), id);
         return new ResponseEntity<>(userMapper.entityToDTO(userUpdated), HttpStatus.OK);

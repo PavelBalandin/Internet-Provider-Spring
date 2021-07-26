@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,14 +39,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDTO> registerUser(@RequestBody RegistrationRequest registrationRequest) {
+    public ResponseEntity<UserDTO> registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
         log.trace("User registration");
         User user = userMapper.RegistrationRequestToEntity(registrationRequest);
         return new ResponseEntity<>(userMapper.entityToDTO(userService.create(user)), HttpStatus.CREATED);
     }
 
     @PostMapping("/auth")
-    public ResponseEntity<Map<String, Object>> auth(@RequestBody AuthRequest request) {
+    public ResponseEntity<Map<String, Object>> auth(@Valid @RequestBody AuthRequest request) {
         log.trace("User authorization");
         User userEntity = userService.findByLoginAndPassword(request.getLogin(), request.getPassword());
         String token = jwtProvider.generateToken(userEntity);

@@ -10,14 +10,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 import java.util.List;
 
 @Log4j2
 @CrossOrigin
 @RestController
+@Validated
 @RequestMapping("api/v1/tariffs")
 public class TariffController {
 
@@ -65,14 +69,14 @@ public class TariffController {
     }
 
     @PostMapping
-    public ResponseEntity<TariffDTO> createTariff(@RequestBody TariffDTO tariffDTO) {
+    public ResponseEntity<TariffDTO> createTariff(@Valid @RequestBody TariffDTO tariffDTO) {
         log.trace("Creating tariff");
         Tariff tariff = tariffMapper.DTOtoEntity(tariffDTO);
         return new ResponseEntity<>(tariffMapper.entityToDTO(tariffService.create(tariff)), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TariffDTO> updateTariff(@PathVariable("id") Long id, @RequestBody TariffDTO tariffDTO) {
+    public ResponseEntity<TariffDTO> updateTariff(@Valid @PathVariable("id") Long id, @RequestBody TariffDTO tariffDTO) {
         log.trace("Updating tariff");
         Tariff tariff = tariffMapper.DTOtoEntity(tariffDTO);
         return new ResponseEntity<>(tariffMapper.entityToDTO(tariffService.update(tariff, id)), HttpStatus.OK);
@@ -86,7 +90,7 @@ public class TariffController {
     }
 
     @PostMapping("/order")
-    public ResponseEntity<BigDecimal> makeOrder(@RequestBody List<TariffDTO> tariffDTOList, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<BigDecimal> makeOrder(@NotEmpty @RequestBody List<TariffDTO> tariffDTOList, @RequestHeader(name = "Authorization") String token) {
         log.trace("Order making");
         Long id = jwtProvider.getUserIdFromToken(token);
         return new ResponseEntity<>(tariffService.makeOrder(id, tariffMapper.listDTOtoEntityList(tariffDTOList)), HttpStatus.CREATED);
