@@ -7,6 +7,8 @@ import com.provider.entity.User;
 import com.provider.mapper.UserMapper;
 import com.provider.security.JwtProvider;
 import com.provider.service.UserService;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,6 +40,10 @@ public class AuthController {
         this.userMapper = userMapper;
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201"),
+            @ApiResponse(responseCode = "403"),
+            @ApiResponse(responseCode = "409")})
     @PostMapping("/register")
     public ResponseEntity<UserDTO> registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
         log.trace("User registration");
@@ -45,6 +51,10 @@ public class AuthController {
         return new ResponseEntity<>(userMapper.entityToDTO(userService.create(user)), HttpStatus.CREATED);
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "403"),
+            @ApiResponse(responseCode = "404")})
     @PostMapping("/auth")
     public ResponseEntity<Map<String, Object>> auth(@Valid @RequestBody AuthRequest request) {
         log.trace("User authorization");
