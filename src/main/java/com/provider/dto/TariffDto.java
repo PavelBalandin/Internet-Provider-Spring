@@ -7,7 +7,7 @@ import javax.validation.constraints.*;
 import java.math.BigDecimal;
 
 @Data
-public class TariffDTO {
+public class TariffDto {
 
     private Long id;
 

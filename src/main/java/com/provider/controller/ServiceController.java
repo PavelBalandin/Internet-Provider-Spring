@@ -1,6 +1,6 @@
 package com.provider.controller;
 
-import com.provider.dto.ServiceDTO;
+import com.provider.dto.ServiceDto;
 import com.provider.mapper.ServiceMapper;
 import com.provider.service.ServiceService;
 import lombok.extern.log4j.Log4j2;
@@ -31,9 +31,9 @@ public class ServiceController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ServiceDTO>> getAll() {
+    public ResponseEntity<List<ServiceDto>> getAll() {
         log.trace("Getting service list");
-        return new ResponseEntity<>(serviceMapper.listEntityToDTOList(serviceService.getAll()), HttpStatus.OK);
+        return new ResponseEntity<>(serviceMapper.toDtoList(serviceService.getAll()), HttpStatus.OK);
     }
 
 }

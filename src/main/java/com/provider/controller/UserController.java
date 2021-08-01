@@ -1,6 +1,6 @@
 package com.provider.controller;
 
-import com.provider.dto.UserDTO;
+import com.provider.dto.UserDto;
 import com.provider.entity.User;
 import com.provider.mapper.UserMapper;
 import com.provider.service.UserService;
@@ -35,9 +35,9 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "403")})
-    public ResponseEntity<List<UserDTO>> getAll() {
+    public ResponseEntity<List<UserDto>> getAll() {
         log.trace("Getting user list");
-        return new ResponseEntity<>(userMapper.listEntityToDTOList(userService.getAll()), HttpStatus.OK);
+        return new ResponseEntity<>(userMapper.toDtoList(userService.getAll()), HttpStatus.OK);
     }
 
     @GetMapping("/{login}")
@@ -45,9 +45,9 @@ public class UserController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "403"),
             @ApiResponse(responseCode = "404")})
-    public ResponseEntity<UserDTO> getByLogin(@PathVariable String login) {
+    public ResponseEntity<UserDto> getByLogin(@PathVariable String login) {
         log.trace("Getting user by login");
-        return new ResponseEntity<>(userMapper.entityToDTO(userService.findByLogin(login)), HttpStatus.OK);
+        return new ResponseEntity<>(userMapper.toDTO(userService.findByLogin(login)), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -55,10 +55,10 @@ public class UserController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "403"),
             @ApiResponse(responseCode = "404")})
-    public ResponseEntity<UserDTO> update(@Valid @RequestBody UserDTO userDTO, @PathVariable("id") Long id) {
+    public ResponseEntity<UserDto> update(@Valid @RequestBody UserDto userDTO, @PathVariable("id") Long id) {
         log.trace("Updating user by login");
-        User userUpdated = userService.update(userMapper.DTOtoEntity(userDTO), id);
-        return new ResponseEntity<>(userMapper.entityToDTO(userUpdated), HttpStatus.OK);
+        User userUpdated = userService.update(userMapper.toEntity(userDTO), id);
+        return new ResponseEntity<>(userMapper.toDTO(userUpdated), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

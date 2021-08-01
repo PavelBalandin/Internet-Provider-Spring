@@ -1,6 +1,6 @@
 package com.provider.mapper;
 
-import com.provider.dto.PaymentDTO;
+import com.provider.dto.PaymentDto;
 import com.provider.entity.Payment;
 import org.springframework.stereotype.Service;
 
@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class PaymentMapper {
-    public PaymentDTO entityToDTO(Payment payment) {
-        PaymentDTO paymentDTO = new PaymentDTO();
+    public PaymentDto toDto(Payment payment) {
+        PaymentDto paymentDTO = new PaymentDto();
         paymentDTO.setId(payment.getId());
         paymentDTO.setPayment(payment.getPayment());
         paymentDTO.setUser(payment.getUser());
@@ -19,17 +19,17 @@ public class PaymentMapper {
         return paymentDTO;
     }
 
-    public Payment DTOtoEntity(PaymentDTO paymentDTO) {
+    public Payment toEntity(PaymentDto paymentdto) {
         Payment payment = new Payment();
-        payment.setId(paymentDTO.getId());
-        payment.setPayment(paymentDTO.getPayment());
-        payment.setUser(paymentDTO.getUser());
-        payment.setCreated(paymentDTO.getCreated());
+        payment.setId(paymentdto.getId());
+        payment.setPayment(paymentdto.getPayment());
+        payment.setUser(paymentdto.getUser());
+        payment.setCreated(paymentdto.getCreated());
 
         return payment;
     }
 
-    public List<PaymentDTO> listEntityToDTOList(List<Payment> paymentList) {
-        return paymentList.stream().map(this::entityToDTO).collect(Collectors.toList());
+    public List<PaymentDto> listEntityToDTOList(List<Payment> paymentList) {
+        return paymentList.stream().map(this::toDto).collect(Collectors.toList());
     }
 }

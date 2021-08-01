@@ -2,7 +2,7 @@ package com.provider.controller;
 
 import com.provider.dto.AuthRequest;
 import com.provider.dto.RegistrationRequest;
-import com.provider.dto.UserDTO;
+import com.provider.dto.UserDto;
 import com.provider.entity.User;
 import com.provider.mapper.UserMapper;
 import com.provider.security.JwtProvider;
@@ -45,10 +45,10 @@ public class AuthController {
             @ApiResponse(responseCode = "403"),
             @ApiResponse(responseCode = "409")})
     @PostMapping("/register")
-    public ResponseEntity<UserDTO> registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
+    public ResponseEntity<UserDto> registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
         log.trace("User registration");
-        User user = userMapper.RegistrationRequestToEntity(registrationRequest);
-        return new ResponseEntity<>(userMapper.entityToDTO(userService.create(user)), HttpStatus.CREATED);
+        User user = userMapper.registrationRequestToEntity(registrationRequest);
+        return new ResponseEntity<>(userMapper.toDTO(userService.create(user)), HttpStatus.CREATED);
     }
 
     @ApiResponses(value = {

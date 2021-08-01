@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 @Data
-public class UserDTO {
+public class UserDto {
 
     private Long id;
 

@@ -1,7 +1,7 @@
 package com.provider.mapper;
 
 import com.provider.dto.RegistrationRequest;
-import com.provider.dto.UserDTO;
+import com.provider.dto.UserDto;
 import com.provider.entity.User;
 import org.springframework.stereotype.Service;
 
@@ -10,35 +10,35 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserMapper {
-    public UserDTO entityToDTO(User user) {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setId(user.getId());
-        userDTO.setLogin(user.getLogin());
-        userDTO.setFirstName(user.getFirstName());
-        userDTO.setLastName(user.getLastName());
-        userDTO.setRoleList(user.getRoleList());
-        userDTO.setStatus(user.getStatus());
+    public UserDto toDTO(User user) {
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setLogin(user.getLogin());
+        userDto.setFirstName(user.getFirstName());
+        userDto.setLastName(user.getLastName());
+        userDto.setRoleList(user.getRoleList());
+        userDto.setStatus(user.getStatus());
 
-        return userDTO;
+        return userDto;
     }
 
-    public User DTOtoEntity(UserDTO userDTO) {
+    public User toEntity(UserDto userDto) {
         User user = new User();
-        user.setId(userDTO.getId());
-        user.setLogin(userDTO.getLogin());
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        user.setRoleList(userDTO.getRoleList());
-        user.setStatus(userDTO.getStatus());
+        user.setId(userDto.getId());
+        user.setLogin(userDto.getLogin());
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+        user.setRoleList(userDto.getRoleList());
+        user.setStatus(userDto.getStatus());
 
         return user;
     }
 
-    public List<UserDTO> listEntityToDTOList(List<User> userList) {
-        return userList.stream().map(this::entityToDTO).collect(Collectors.toList());
+    public List<UserDto> toDtoList(List<User> userList) {
+        return userList.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
-    public User RegistrationRequestToEntity(RegistrationRequest registrationRequest) {
+    public User registrationRequestToEntity(RegistrationRequest registrationRequest) {
         User user = new User();
         user.setLogin(registrationRequest.getLogin());
         user.setFirstName(registrationRequest.getFirstName());

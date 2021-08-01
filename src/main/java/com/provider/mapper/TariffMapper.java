@@ -1,6 +1,6 @@
 package com.provider.mapper;
 
-import com.provider.dto.TariffDTO;
+import com.provider.dto.TariffDto;
 import com.provider.entity.Tariff;
 import org.springframework.stereotype.Service;
 
@@ -10,36 +10,36 @@ import java.util.stream.Collectors;
 @Service
 public class TariffMapper {
 
-    public TariffDTO entityToDTO(Tariff tariff) {
-        TariffDTO tariffDTO = new TariffDTO();
-        tariffDTO.setId(tariff.getId());
-        tariffDTO.setName(tariff.getName());
-        tariffDTO.setDescription(tariff.getDescription());
-        tariffDTO.setDuration(tariff.getDuration());
-        tariffDTO.setPrice(tariff.getPrice());
-        tariffDTO.setService(tariff.getService());
+    public TariffDto toDto(Tariff tariff) {
+        TariffDto tariffDto = new TariffDto();
+        tariffDto.setId(tariff.getId());
+        tariffDto.setName(tariff.getName());
+        tariffDto.setDescription(tariff.getDescription());
+        tariffDto.setDuration(tariff.getDuration());
+        tariffDto.setPrice(tariff.getPrice());
+        tariffDto.setService(tariff.getService());
 
-        return tariffDTO;
+        return tariffDto;
     }
 
-    public Tariff DTOtoEntity(TariffDTO tariffDTO) {
+    public Tariff toEntity(TariffDto tariffDto) {
         Tariff tariff = new Tariff();
-        tariff.setId(tariffDTO.getId());
-        tariff.setName(tariffDTO.getName());
-        tariff.setDescription(tariffDTO.getDescription());
-        tariff.setDuration(tariffDTO.getDuration());
-        tariff.setPrice(tariffDTO.getPrice());
-        tariff.setService(tariffDTO.getService());
+        tariff.setId(tariffDto.getId());
+        tariff.setName(tariffDto.getName());
+        tariff.setDescription(tariffDto.getDescription());
+        tariff.setDuration(tariffDto.getDuration());
+        tariff.setPrice(tariffDto.getPrice());
+        tariff.setService(tariffDto.getService());
 
         return tariff;
     }
 
-    public List<TariffDTO> listEntityToDTOList(List<Tariff> tariffList) {
-        return tariffList.stream().map(this::entityToDTO).collect(Collectors.toList());
+    public List<TariffDto> toDtoList(List<Tariff> tariffList) {
+        return tariffList.stream().map(this::toDto).collect(Collectors.toList());
     }
 
-    public List<Tariff> listDTOtoEntityList(List<TariffDTO> tariffDTOListList) {
-        return tariffDTOListList.stream().map(this::DTOtoEntity).collect(Collectors.toList());
+    public List<Tariff> listDTOtoEntityList(List<TariffDto> tariffDTOListList) {
+        return tariffDTOListList.stream().map(this::toEntity).collect(Collectors.toList());
     }
 
 

@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-public class PaymentDTO {
+public class PaymentDto {
 
     private Long id;
 
