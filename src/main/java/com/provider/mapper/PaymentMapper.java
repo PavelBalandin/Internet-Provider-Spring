@@ -29,7 +29,7 @@ public class PaymentMapper {
         return payment;
     }
 
-    public List<PaymentDto> listEntityToDTOList(List<Payment> paymentList) {
+    public List<PaymentDto> toDtoList(List<Payment> paymentList) {
         return paymentList.stream().map(this::toDto).collect(Collectors.toList());
     }
 }

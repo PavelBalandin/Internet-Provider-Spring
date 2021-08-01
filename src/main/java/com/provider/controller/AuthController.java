@@ -48,7 +48,7 @@ public class AuthController {
     public ResponseEntity<UserDto> registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
         log.trace("User registration");
         User user = userMapper.registrationRequestToEntity(registrationRequest);
-        return new ResponseEntity<>(userMapper.toDTO(userService.create(user)), HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.signup(registrationRequest), HttpStatus.CREATED);
     }
 
     @ApiResponses(value = {

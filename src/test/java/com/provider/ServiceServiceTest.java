@@ -1,6 +1,8 @@
 package com.provider;
 
+import com.provider.dto.ServiceDto;
 import com.provider.entity.Service;
+import com.provider.mapper.ServiceMapper;
 import com.provider.repository.ServiceRepository;
 import com.provider.service.ServiceService;
 import com.provider.service.impl.ServiceServiceImpl;
@@ -26,15 +28,17 @@ public class ServiceServiceTest {
 
     @BeforeEach
     void setUp() {
-        subject = new ServiceServiceImpl(serviceRepository);
+        subject = new ServiceServiceImpl(serviceRepository, new ServiceMapper());
     }
 
     @Test
     void findAll() {
-        List<Service> servicesExpected = new ArrayList<>();
-        when(serviceRepository.findAll()).thenReturn(servicesExpected);
+        List<ServiceDto> servicesExpected = new ArrayList<>();
 
-        List<Service> servicesActual = subject.getAll();
+        List<Service> serviceList = new ArrayList<>();
+        when(serviceRepository.findAll()).thenReturn(serviceList);
+
+        List<ServiceDto> servicesActual = subject.getAll();
 
         assertEquals(servicesExpected, servicesActual);
     }

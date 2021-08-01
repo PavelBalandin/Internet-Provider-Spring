@@ -1,9 +1,11 @@
 package com.provider;
 
+import com.provider.dto.TariffDto;
 import com.provider.entity.*;
 import com.provider.exception.NotEnoughFundsException;
 import com.provider.exception.ResourceNotFoundException;
 import com.provider.exception.ResourcesAlreadyExistsException;
+import com.provider.mapper.TariffMapper;
 import com.provider.repository.PaymentRepository;
 import com.provider.repository.TariffRepository;
 import com.provider.repository.TariffUserRepository;
@@ -42,25 +44,30 @@ public class TariffServiceTest {
 
     @BeforeEach
     void setUp() {
-        subject = new TariffServiceImpl(tariffRepository, userRepository, paymentRepository, tariffUserRepository);
+        subject = new TariffServiceImpl(tariffRepository, userRepository, paymentRepository, tariffUserRepository, new TariffMapper());
     }
 
     @Test
     void findAll() {
-        List<Tariff> tariffsExpected = new ArrayList<>();
-        when(tariffRepository.findAll()).thenReturn(tariffsExpected);
+        List<TariffDto> tariffsExpected = new ArrayList<>();
 
-        List<Tariff> tariffsActual = subject.getAll();
+        List<Tariff> tariffList = new ArrayList<>();
+        when(tariffRepository.findAll()).thenReturn(tariffList);
+
+        List<TariffDto> tariffsActual = subject.getAll();
 
         assertEquals(tariffsExpected, tariffsActual);
     }
 
     @Test
     void findById() {
-        Tariff tariffExpected = Tariff.builder().id(1L).build();
-        when(tariffRepository.findById(1L)).thenReturn(Optional.of(tariffExpected));
+        TariffDto tariffExpected = new TariffDto();
+        tariffExpected.setId(1L);
 
-        Tariff tariffActual = subject.findById(1L);
+        Tariff tariff = Tariff.builder().id(1L).build();
+        when(tariffRepository.findById(1L)).thenReturn(Optional.of(tariff));
+
+        TariffDto tariffActual = subject.findById(1L);
 
         assertEquals(tariffExpected, tariffActual);
     }
@@ -73,10 +80,12 @@ public class TariffServiceTest {
 
     @Test
     void save() {
-        Tariff tariffExpected = new Tariff();
-        when(tariffRepository.save(any(Tariff.class))).thenReturn(tariffExpected);
+        TariffDto tariffExpected = new TariffDto();
 
-        Tariff tariffActual = subject.create(tariffExpected);
+        Tariff tariff = new Tariff();
+        when(tariffRepository.save(any(Tariff.class))).thenReturn(tariff);
+
+        TariffDto tariffActual = subject.create(tariffExpected);
 
         assertEquals(tariffActual, tariffExpected);
     }
@@ -101,12 +110,30 @@ public class TariffServiceTest {
                 .service(Service.builder().id(2L).build())
                 .build();
 
+        TariffDto tariffDto = TariffDto.builder()
+                .id(1L)
+                .name("name")
+                .description("description")
+                .duration(30)
+                .price(BigDecimal.valueOf(100))
+                .service(Service.builder().id(1L).build())
+                .build();
+
+        TariffDto tariffExpected = TariffDto.builder()
+                .id(1L)
+                .name("nameUpdated")
+                .description("descriptionUpdated")
+                .duration(60)
+                .price(BigDecimal.valueOf(200))
+                .service(Service.builder().id(2L).build())
+                .build();
+
         when(tariffRepository.findById(1L)).thenReturn(Optional.of(tariff));
         when(tariffRepository.save(any(Tariff.class))).thenReturn(tariffUpdated);
 
-        Tariff tariffActual = subject.update(tariffUpdated, 1L);
+        TariffDto tariffActual = subject.update(tariffDto, 1L);
 
-        assertEquals(tariffUpdated, tariffActual);
+        assertEquals(tariffExpected, tariffActual);
     }
 
     @Test
@@ -122,10 +149,10 @@ public class TariffServiceTest {
     @Test
     void makeOrder() {
         List<Tariff> userTariffList = new ArrayList<>();
-        List<Tariff> orderTariffList = new ArrayList<>();
-        orderTariffList.add(Tariff.builder().id(1L).build());
-        orderTariffList.add(Tariff.builder().id(2L).build());
-        orderTariffList.add(Tariff.builder().id(3L).build());
+        List<TariffDto> orderTariffList = new ArrayList<>();
+        orderTariffList.add(TariffDto.builder().id(1L).build());
+        orderTariffList.add(TariffDto.builder().id(2L).build());
+        orderTariffList.add(TariffDto.builder().id(3L).build());
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(User.builder().id(1L).build()));
         when(tariffRepository.findTariffsSum(any())).thenReturn(BigDecimal.valueOf(400));
@@ -141,10 +168,10 @@ public class TariffServiceTest {
     @Test
     void shouldThrowExceptionWhenUserNotHaveEnoughFounds() {
         List<Tariff> userTariffList = new ArrayList<>();
-        List<Tariff> orderTariffList = new ArrayList<>();
-        orderTariffList.add(Tariff.builder().id(1L).build());
-        orderTariffList.add(Tariff.builder().id(2L).build());
-        orderTariffList.add(Tariff.builder().id(3L).build());
+        List<TariffDto> orderTariffList = new ArrayList<>();
+        orderTariffList.add(TariffDto.builder().id(1L).build());
+        orderTariffList.add(TariffDto.builder().id(2L).build());
+        orderTariffList.add(TariffDto.builder().id(3L).build());
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(User.builder().id(1L).build()));
         when(tariffRepository.findTariffsSum(any())).thenReturn(BigDecimal.valueOf(600));
@@ -158,10 +185,10 @@ public class TariffServiceTest {
     void shouldThrowExceptionWhenUserHaveTariffsFromOrder() {
         List<Tariff> userTariffList = new ArrayList<>();
         userTariffList.add(Tariff.builder().id(1L).build());
-        List<Tariff> orderTariffList = new ArrayList<>();
-        orderTariffList.add(Tariff.builder().id(1L).build());
-        orderTariffList.add(Tariff.builder().id(2L).build());
-        orderTariffList.add(Tariff.builder().id(3L).build());
+        List<TariffDto> orderTariffList = new ArrayList<>();
+        orderTariffList.add(TariffDto.builder().id(1L).build());
+        orderTariffList.add(TariffDto.builder().id(2L).build());
+        orderTariffList.add(TariffDto.builder().id(3L).build());
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(User.builder().id(1L).build()));
         when(tariffRepository.findTariffsSum(any())).thenReturn(BigDecimal.valueOf(400));

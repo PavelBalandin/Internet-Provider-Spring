@@ -1,12 +1,18 @@
 package com.provider.dto;
 
 import com.provider.entity.Service;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class TariffDto {
 
     private Long id;

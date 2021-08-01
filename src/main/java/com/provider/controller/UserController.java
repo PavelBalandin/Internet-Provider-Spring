@@ -23,12 +23,9 @@ public class UserController {
 
     private final UserService userService;
 
-    private final UserMapper userMapper;
-
     @Autowired
-    public UserController(UserService userService, UserMapper userMapper) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userMapper = userMapper;
     }
 
     @GetMapping
@@ -37,7 +34,7 @@ public class UserController {
             @ApiResponse(responseCode = "403")})
     public ResponseEntity<List<UserDto>> getAll() {
         log.trace("Getting user list");
-        return new ResponseEntity<>(userMapper.toDtoList(userService.getAll()), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{login}")
@@ -47,7 +44,7 @@ public class UserController {
             @ApiResponse(responseCode = "404")})
     public ResponseEntity<UserDto> getByLogin(@PathVariable String login) {
         log.trace("Getting user by login");
-        return new ResponseEntity<>(userMapper.toDTO(userService.findByLogin(login)), HttpStatus.OK);
+        return new ResponseEntity<>(userService.findByLogin(login), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -55,10 +52,9 @@ public class UserController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "403"),
             @ApiResponse(responseCode = "404")})
-    public ResponseEntity<UserDto> update(@Valid @RequestBody UserDto userDTO, @PathVariable("id") Long id) {
+    public ResponseEntity<UserDto> update(@Valid @RequestBody UserDto userDto, @PathVariable("id") Long id) {
         log.trace("Updating user by login");
-        User userUpdated = userService.update(userMapper.toEntity(userDTO), id);
-        return new ResponseEntity<>(userMapper.toDTO(userUpdated), HttpStatus.OK);
+        return new ResponseEntity<>(userService.update(userDto, id), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

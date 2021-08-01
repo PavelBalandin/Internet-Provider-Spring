@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserMapper {
-    public UserDto toDTO(User user) {
+    public UserDto toDto(User user) {
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
         userDto.setLogin(user.getLogin());
@@ -35,7 +35,7 @@ public class UserMapper {
     }
 
     public List<UserDto> toDtoList(List<User> userList) {
-        return userList.stream().map(this::toDTO).collect(Collectors.toList());
+        return userList.stream().map(this::toDto).collect(Collectors.toList());
     }
 
     public User registrationRequestToEntity(RegistrationRequest registrationRequest) {

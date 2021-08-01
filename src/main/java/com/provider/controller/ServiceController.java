@@ -1,7 +1,6 @@
 package com.provider.controller;
 
 import com.provider.dto.ServiceDto;
-import com.provider.mapper.ServiceMapper;
 import com.provider.service.ServiceService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,18 +21,15 @@ public class ServiceController {
 
     private final ServiceService serviceService;
 
-    private final ServiceMapper serviceMapper;
-
     @Autowired
-    public ServiceController(ServiceService serviceService, ServiceMapper serviceMapper) {
+    public ServiceController(ServiceService serviceService) {
         this.serviceService = serviceService;
-        this.serviceMapper = serviceMapper;
     }
 
     @GetMapping
     public ResponseEntity<List<ServiceDto>> getAll() {
         log.trace("Getting service list");
-        return new ResponseEntity<>(serviceMapper.toDtoList(serviceService.getAll()), HttpStatus.OK);
+        return new ResponseEntity<>(serviceService.getAll(), HttpStatus.OK);
     }
 
 }

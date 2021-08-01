@@ -1,21 +1,25 @@
 package com.provider.service;
 
+import com.provider.dto.RegistrationRequest;
+import com.provider.dto.UserDto;
 import com.provider.entity.User;
 
 import java.util.List;
 
 public interface UserService {
-    List<User> getAll();
+    List<UserDto> getAll();
 
-    User findById(Long id);
+    UserDto findById(Long id);
 
-    User create(User entity);
+    UserDto create(UserDto entity);
 
-    User update(User entity, Long id);
+    UserDto update(UserDto entity, Long id);
 
     void delete(Long id);
 
-    User findByLogin(String login);
+    UserDto findByLogin(String login);
 
     User findByLoginAndPassword(String login, String password);
+
+    UserDto signup(RegistrationRequest registrationRequest);
 }

@@ -1,12 +1,13 @@
 package com.provider.service;
 
+import com.provider.dto.ServiceDto;
 import com.provider.entity.Service;
 
 import java.util.List;
 
 public interface ServiceService {
-    List<Service> getAll();
+    List<ServiceDto> getAll();
 
-    Service findById(Long id);
+    ServiceDto findById(Long id);
 
 }

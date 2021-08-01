@@ -31,17 +31,14 @@ public class TariffController {
 
     private final JwtProvider jwtProvider;
 
-    private final TariffMapper tariffMapper;
-
     @Autowired
-    public TariffController(TariffService tariffService, JwtProvider jwtProvider, TariffMapper tariffMapper) {
+    public TariffController(TariffService tariffService, JwtProvider jwtProvider) {
         this.tariffService = tariffService;
         this.jwtProvider = jwtProvider;
-        this.tariffMapper = tariffMapper;
     }
 
     @GetMapping
-    public ResponseEntity<Page<Tariff>> getAll(
+    public ResponseEntity<Page<TariffDto>> getAll(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "5") Integer size,
             @RequestParam(defaultValue = "id") String sort,
@@ -57,7 +54,7 @@ public class TariffController {
             @ApiResponse(responseCode = "404")})
     public ResponseEntity<TariffDto> getTariff(@PathVariable("id") Long id) {
         log.trace("Getting tariff by id");
-        return new ResponseEntity<>(tariffMapper.toDto(tariffService.findById(id)), HttpStatus.OK);
+        return new ResponseEntity<>(tariffService.findById(id), HttpStatus.OK);
     }
 
     @GetMapping("/service/{id}")
@@ -66,7 +63,7 @@ public class TariffController {
             @ApiResponse(responseCode = "404")})
     public ResponseEntity<List<TariffDto>> getTariffListByServiceId(@PathVariable("id") Long id) {
         log.trace("Getting tariff list by service id");
-        return new ResponseEntity<>(tariffMapper.toDtoList(tariffService.getTariffListByServiceId(id)), HttpStatus.OK);
+        return new ResponseEntity<>(tariffService.getTariffListByServiceId(id), HttpStatus.OK);
     }
 
     @GetMapping("/user")
@@ -77,17 +74,16 @@ public class TariffController {
     public ResponseEntity<List<TariffDto>> getTariffListByUserId(@RequestHeader(name = "Authorization") String token) {
         log.trace("Getting tariff list by user id");
         Long id = jwtProvider.getUserIdFromToken(token);
-        return new ResponseEntity<>(tariffMapper.toDtoList(tariffService.getTariffListByUserId(id)), HttpStatus.OK);
+        return new ResponseEntity<>(tariffService.getTariffListByUserId(id), HttpStatus.OK);
     }
 
     @PostMapping
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "403")})
-    public ResponseEntity<TariffDto> createTariff(@Valid @RequestBody TariffDto tariffDTO) {
+    public ResponseEntity<TariffDto> createTariff(@Valid @RequestBody TariffDto tariffDto) {
         log.trace("Creating tariff");
-        Tariff tariff = tariffMapper.toEntity(tariffDTO);
-        return new ResponseEntity<>(tariffMapper.toDto(tariffService.create(tariff)), HttpStatus.CREATED);
+        return new ResponseEntity<>(tariffService.create(tariffDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -95,10 +91,9 @@ public class TariffController {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "403"),
             @ApiResponse(responseCode = "404")})
-    public ResponseEntity<TariffDto> updateTariff(@Valid @PathVariable("id") Long id, @RequestBody TariffDto tariffDTO) {
+    public ResponseEntity<TariffDto> updateTariff(@Valid @PathVariable("id") Long id, @RequestBody TariffDto tariffDto) {
         log.trace("Updating tariff");
-        Tariff tariff = tariffMapper.toEntity(tariffDTO);
-        return new ResponseEntity<>(tariffMapper.toDto(tariffService.update(tariff, id)), HttpStatus.OK);
+        return new ResponseEntity<>(tariffService.update(tariffDto, id), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -117,9 +112,9 @@ public class TariffController {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "402"),
             @ApiResponse(responseCode = "403")})
-    public ResponseEntity<BigDecimal> makeOrder(@NotEmpty @RequestBody List<TariffDto> tariffDTOList, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<BigDecimal> makeOrder(@NotEmpty @RequestBody List<TariffDto> tariffDtoList, @RequestHeader(name = "Authorization") String token) {
         log.trace("Order making");
         Long id = jwtProvider.getUserIdFromToken(token);
-        return new ResponseEntity<>(tariffService.makeOrder(id, tariffMapper.listDTOtoEntityList(tariffDTOList)), HttpStatus.CREATED);
+        return new ResponseEntity<>(tariffService.makeOrder(id, tariffDtoList), HttpStatus.CREATED);
     }
 }

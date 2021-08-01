@@ -38,7 +38,7 @@ public class TariffMapper {
         return tariffList.stream().map(this::toDto).collect(Collectors.toList());
     }
 
-    public List<Tariff> listDTOtoEntityList(List<TariffDto> tariffDTOListList) {
+    public List<Tariff> toEntityList(List<TariffDto> tariffDTOListList) {
         return tariffDTOListList.stream().map(this::toEntity).collect(Collectors.toList());
     }
 

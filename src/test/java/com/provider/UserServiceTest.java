@@ -1,11 +1,13 @@
 package com.provider;
 
+import com.provider.dto.UserDto;
 import com.provider.entity.Role;
 import com.provider.entity.Status;
 import com.provider.entity.Tariff;
 import com.provider.entity.User;
 import com.provider.exception.ResourceNotFoundException;
 import com.provider.exception.ResourcesAlreadyExistsException;
+import com.provider.mapper.UserMapper;
 import com.provider.repository.RoleRepository;
 import com.provider.repository.StatusRepository;
 import com.provider.repository.UserRepository;
@@ -45,25 +47,29 @@ public class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        subject = new UserServiceImpl(userRepository, roleRepository, passwordEncoder, statusRepository);
+        subject = new UserServiceImpl(userRepository, roleRepository, passwordEncoder, statusRepository, new UserMapper());
     }
 
     @Test
     void getAll() {
-        List<User> usersExpected = new ArrayList<>();
-        when(userRepository.findAll()).thenReturn(usersExpected);
+        List<UserDto> usersExpected = new ArrayList<>();
 
-        List<User> usersActual = subject.getAll();
+        List<User> userList = new ArrayList<>();
+        when(userRepository.findAll()).thenReturn(userList);
+
+        List<UserDto> usersActual = subject.getAll();
 
         assertEquals(usersExpected, usersActual);
     }
 
     @Test
     void findById() {
-        User userExpected = new User();
-        when(userRepository.findById(1L)).thenReturn(Optional.of(userExpected));
+        UserDto userExpected = new UserDto();
 
-        User userActual = subject.findById(1L);
+        User user = new User();
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        UserDto userActual = subject.findById(1L);
 
         assertEquals(userExpected, userActual);
     }
@@ -76,10 +82,12 @@ public class UserServiceTest {
 
     @Test
     void findByLogin() {
-        User userExpected = new User();
-        when(userRepository.findByLogin(any(String.class))).thenReturn(Optional.of(userExpected));
+        UserDto userExpected = new UserDto();
 
-        User userActual = subject.findByLogin("login");
+        User user = new User();
+        when(userRepository.findByLogin(any(String.class))).thenReturn(Optional.of(user));
+
+        UserDto userActual = subject.findByLogin("login");
 
         assertEquals(userExpected, userActual);
     }
@@ -112,19 +120,22 @@ public class UserServiceTest {
 
     @Test
     void create() {
-        User userExpected = new User();
-        when(userRepository.save(any(User.class))).thenReturn(userExpected);
+        UserDto userExpected = new UserDto();
+
+        User user = new User();
+        when(userRepository.save(any(User.class))).thenReturn(user);
         when(roleRepository.findByName(any(String.class))).thenReturn(Optional.of(new Role()));
         when(statusRepository.findByName(any(String.class))).thenReturn(Optional.of(new Status()));
 
-        User userActual = subject.create(userExpected);
+        UserDto userActual = subject.create(userExpected);
 
         assertEquals(userExpected, userActual);
     }
 
     @Test
     void shouldThrowExceptionWhenTryCreateAlreadyExistEntity() {
-        User userExpected = new User();
+        UserDto userExpected = new UserDto();
+
         when(userRepository.save(any(User.class))).thenThrow(DataIntegrityViolationException.class);
         when(roleRepository.findByName(any(String.class))).thenReturn(Optional.of(new Role()));
         when(statusRepository.findByName(any(String.class))).thenReturn(Optional.of(new Status()));
@@ -139,7 +150,6 @@ public class UserServiceTest {
         User user = User.builder()
                 .id(1L)
                 .login("login")
-                .password("password")
                 .firstName("first")
                 .lastName("last")
                 .roleList(roleList)
@@ -149,18 +159,36 @@ public class UserServiceTest {
         User userUpdated = User.builder()
                 .id(1L)
                 .login("login")
-                .password("password")
                 .firstName("firstUpdated")
                 .lastName("lastUpdated")
                 .roleList(roleList)
                 .status(new Status())
                 .build();
+
+        UserDto userDto = UserDto.builder()
+                .id(1L)
+                .login("login")
+                .firstName("first")
+                .lastName("last")
+                .roleList(roleList)
+                .status(new Status())
+                .build();
+
+        UserDto userExpected = UserDto.builder()
+                .id(1L)
+                .login("login")
+                .firstName("firstUpdated")
+                .lastName("lastUpdated")
+                .roleList(roleList)
+                .status(new Status())
+                .build();
+
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(userUpdated);
 
-        User userActual = subject.update(userUpdated, 1L);
+        UserDto userActual = subject.update(userDto, 1L);
 
-        assertEquals(userUpdated, userActual);
+        assertEquals(userExpected, userActual);
     }
 
     @Test

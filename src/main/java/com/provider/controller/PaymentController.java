@@ -26,13 +26,10 @@ public class PaymentController {
 
     private final JwtProvider jwtProvider;
 
-    private final PaymentMapper paymentMapper;
-
     @Autowired
-    public PaymentController(PaymentService paymentService, JwtProvider jwtProvider, PaymentMapper paymentMapper) {
+    public PaymentController(PaymentService paymentService, JwtProvider jwtProvider) {
         this.paymentService = paymentService;
         this.jwtProvider = jwtProvider;
-        this.paymentMapper = paymentMapper;
     }
 
     @GetMapping("/user")
@@ -43,17 +40,16 @@ public class PaymentController {
     public ResponseEntity<List<PaymentDto>> getByUserId(@RequestHeader(name = "Authorization") String token) {
         log.trace("Getting payment list by user id");
         Long id = jwtProvider.getUserIdFromToken(token);
-        return new ResponseEntity<>(paymentMapper.listEntityToDTOList(paymentService.getByUserId(id)), HttpStatus.OK);
+        return new ResponseEntity<>(paymentService.getByUserId(id), HttpStatus.OK);
     }
 
     @PostMapping
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "403")})
-    public ResponseEntity<PaymentDto> create(@Valid @RequestBody PaymentDto paymentDTO, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<PaymentDto> create(@Valid @RequestBody PaymentDto paymentDto, @RequestHeader(name = "Authorization") String token) {
         log.trace("Creating payment");
-        Payment payment = paymentMapper.toEntity(paymentDTO);
-        payment.setUser(User.builder().id(jwtProvider.getUserIdFromToken(token)).build());
-        return new ResponseEntity<>(paymentMapper.toDto(paymentService.create(payment)), HttpStatus.CREATED);
+        paymentDto.setUser(User.builder().id(jwtProvider.getUserIdFromToken(token)).build());
+        return new ResponseEntity<>(paymentService.create(paymentDto), HttpStatus.CREATED);
     }
 }

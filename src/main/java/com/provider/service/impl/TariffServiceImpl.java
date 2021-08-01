@@ -1,9 +1,11 @@
 package com.provider.service.impl;
 
+import com.provider.dto.TariffDto;
 import com.provider.entity.*;
 import com.provider.exception.NotEnoughFundsException;
 import com.provider.exception.ResourceNotFoundException;
 import com.provider.exception.ResourcesAlreadyExistsException;
+import com.provider.mapper.TariffMapper;
 import com.provider.repository.PaymentRepository;
 import com.provider.repository.TariffRepository;
 import com.provider.repository.TariffUserRepository;
@@ -34,39 +36,47 @@ public class TariffServiceImpl implements TariffService {
 
     private final TariffUserRepository tariffUserRepository;
 
+    private final TariffMapper tariffMapper;
+
     @Autowired
-    public TariffServiceImpl(TariffRepository tariffRepository, UserRepository userRepository, PaymentRepository paymentRepository, TariffUserRepository tariffUserRepository) {
+    public TariffServiceImpl(TariffRepository tariffRepository, UserRepository userRepository, PaymentRepository paymentRepository, TariffUserRepository tariffUserRepository, TariffMapper tariffMapper) {
         this.tariffRepository = tariffRepository;
         this.userRepository = userRepository;
         this.paymentRepository = paymentRepository;
         this.tariffUserRepository = tariffUserRepository;
+        this.tariffMapper = tariffMapper;
     }
 
     @Override
-    public Page<Tariff> getAll(int page, int size, String sort, String order) {
-        return tariffRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.valueOf(order), sort)));
+    public Page<TariffDto> getAll(int page, int size, String sort, String order) {
+        Page<Tariff> tariffPage = tariffRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.valueOf(order), sort)));
+        return tariffPage.map(tariffMapper::toDto);
     }
 
     @Override
-    public List<Tariff> getAll() {
-        return tariffRepository.findAll();
+    public List<TariffDto> getAll() {
+        List<Tariff> tariffList = tariffRepository.findAll();
+        return tariffMapper.toDtoList(tariffList);
     }
 
     @Override
-    public Tariff findById(Long id) {
-        return tariffRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+    public TariffDto findById(Long id) {
+        Tariff tariff = tariffRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+        return tariffMapper.toDto(tariff);
     }
 
     @Override
-    public Tariff create(Tariff tariff) {
-        return tariffRepository.save(tariff);
+    public TariffDto create(TariffDto tariffDto) {
+        Tariff tariff = tariffRepository.save(tariffMapper.toEntity(tariffDto));
+        return tariffMapper.toDto(tariff);
     }
 
     @Override
-    public Tariff update(Tariff tariff, Long id) {
+    public TariffDto update(TariffDto tariffDto, Long id) {
         Tariff tariffFromDb = tariffRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
-        BeanUtils.copyProperties(tariff, tariffFromDb, "id");
-        return tariffRepository.save(tariffFromDb);
+        BeanUtils.copyProperties(tariffMapper.toEntity(tariffDto), tariffFromDb, "id");
+        Tariff tariff = tariffRepository.save(tariffFromDb);
+        return tariffMapper.toDto(tariff);
     }
 
     @Override
@@ -76,17 +86,20 @@ public class TariffServiceImpl implements TariffService {
     }
 
     @Override
-    public List<Tariff> getTariffListByServiceId(Long id) {
-        return tariffRepository.findByServiceId(id);
+    public List<TariffDto> getTariffListByServiceId(Long id) {
+        List<Tariff> tariffList = tariffRepository.findByServiceId(id);
+        return tariffMapper.toDtoList(tariffList);
     }
 
     @Override
-    public List<Tariff> getTariffListByUserId(Long id) {
-        return tariffRepository.findByUserId(id);
+    public List<TariffDto> getTariffListByUserId(Long id) {
+        List<Tariff> tariffList = tariffRepository.findByUserId(id);
+        return tariffMapper.toDtoList(tariffList);
     }
 
     @Transactional
-    public BigDecimal makeOrder(Long id, List<Tariff> tariffList) {
+    public BigDecimal makeOrder(Long id, List<TariffDto> tariffDtoList) {
+        List<Tariff> tariffList = tariffMapper.toEntityList(tariffDtoList);
         User user = userRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
         BigDecimal tariffSum = tariffRepository.findTariffsSum(tariffList.stream().map(Tariff::getId).collect(Collectors.toList()));
         BigDecimal userSum = paymentRepository.getTotalUserSum(id);

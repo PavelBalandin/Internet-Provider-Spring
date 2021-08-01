@@ -1,6 +1,8 @@
 package com.provider.service.impl;
 
+import com.provider.dto.PaymentDto;
 import com.provider.entity.Payment;
+import com.provider.mapper.PaymentMapper;
 import com.provider.repository.PaymentRepository;
 import com.provider.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,18 +15,23 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
 
+    private final PaymentMapper paymentMapper;
+
     @Autowired
-    public PaymentServiceImpl(PaymentRepository paymentRepository) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository, PaymentMapper paymentMapper) {
         this.paymentRepository = paymentRepository;
+        this.paymentMapper = paymentMapper;
     }
 
     @Override
-    public Payment create(Payment payment) {
-        return paymentRepository.save(payment);
+    public PaymentDto create(PaymentDto paymentDto) {
+        Payment payment = paymentRepository.save(paymentMapper.toEntity(paymentDto));
+        return paymentMapper.toDto(payment);
     }
 
     @Override
-    public List<Payment> getByUserId(Long id) {
-        return paymentRepository.findByUserId(id);
+    public List<PaymentDto> getByUserId(Long id) {
+        List<Payment> paymentList = paymentRepository.findByUserId(id);
+        return paymentMapper.toDtoList(paymentList);
     }
 }
