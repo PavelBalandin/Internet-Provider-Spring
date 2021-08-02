@@ -4,19 +4,29 @@
         <Property name="LOG_PATTERN">
             %d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{${LOG_LEVEL_PATTERN:-%5p}}{FATAL=red, ERROR=red, WARN=yellow, INFO=green, DEBUG=green, TRACE=green} %style{${sys:PID}}{magenta} --- [%15.15t] %style{%-40.40c{1.}}{cyan} : %m%n%ex
         </Property>
+        <Property name="FILE_PATTERN">${date:yyyy-MM-dd}</Property>
     </Properties>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="${LOG_PATTERN}" disableAnsi="false"/>
         </Console>
+
+        <File name="File" fileName="logs/${FILE_PATTERN}.log">
+            <PatternLayout pattern="${LOG_PATTERN}" disableAnsi="false"/>
+        </File>
     </Appenders>
     <Loggers>
         <Logger name="com.provider" level="trace" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
 
+        <Logger name="com.provider" level="trace" additivity="false">
+            <AppenderRef ref="File"/>
+        </Logger>
+
         <Root level="info">
             <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
         </Root>
     </Loggers>
 </Configuration>

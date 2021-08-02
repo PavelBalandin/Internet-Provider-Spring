@@ -31,13 +31,10 @@ public class AuthController {
 
     private final JwtProvider jwtProvider;
 
-    private final UserMapper userMapper;
-
     @Autowired
     public AuthController(UserService userService, JwtProvider jwtProvider, UserMapper userMapper) {
         this.userService = userService;
         this.jwtProvider = jwtProvider;
-        this.userMapper = userMapper;
     }
 
     @ApiResponses(value = {
@@ -47,7 +44,6 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<UserDto> registerUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
         log.trace("User registration");
-        User user = userMapper.registrationRequestToEntity(registrationRequest);
         return new ResponseEntity<>(userService.signup(registrationRequest), HttpStatus.CREATED);
     }
 

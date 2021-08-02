@@ -4,6 +4,7 @@ import com.provider.entity.User;
 import com.provider.exception.AccessDeniedException;
 import io.jsonwebtoken.*;
 import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +12,7 @@ import java.util.Date;
 
 import static org.springframework.util.StringUtils.hasText;
 
-@Log
+@Log4j2
 @Component
 public class JwtProvider {
 
@@ -23,6 +24,7 @@ public class JwtProvider {
 
     public String generateToken(User user) {
         Date now = new Date();
+        log.trace("Generate token");
         return Jwts.builder()
                 .setId(user.getId().toString())
                 .setSubject(user.getLogin())
@@ -37,30 +39,34 @@ public class JwtProvider {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException expEx) {
-            log.severe("Token expired");
+            log.trace("Token expired");
         } catch (UnsupportedJwtException unsEx) {
-            log.severe("Unsupported jwt");
+            log.trace("Unsupported jwt");
         } catch (MalformedJwtException mjEx) {
-            log.severe("Malformed jwt");
+            log.trace("Malformed jwt");
         } catch (SignatureException sEx) {
-            log.severe("Invalid signature");
+            log.trace("Invalid signature");
         } catch (Exception e) {
-            log.severe("invalid token");
+            log.trace("invalid token");
         }
         return false;
     }
 
     public String getLoginFromToken(String token) {
+        log.trace("Get login from token");
         Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
         return claims.getSubject();
     }
 
     public Long getUserIdFromToken(String bearer) {
+        log.trace("Get user id from token");
         if (hasText(bearer) && bearer.startsWith("Bearer ")) {
             String token = bearer.substring(7);
             Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+            log.trace("Token is valid");
             return Long.valueOf(claims.getId());
         } else {
+            log.trace("Access denied");
             throw new AccessDeniedException();
         }
     }

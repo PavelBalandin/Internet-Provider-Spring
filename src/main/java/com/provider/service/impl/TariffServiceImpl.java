@@ -11,6 +11,7 @@ import com.provider.repository.TariffRepository;
 import com.provider.repository.TariffUserRepository;
 import com.provider.repository.UserRepository;
 import com.provider.service.TariffService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Log4j2
 @Service
 public class TariffServiceImpl implements TariffService {
 
@@ -50,24 +52,28 @@ public class TariffServiceImpl implements TariffService {
     @Override
     public Page<TariffDto> getAll(int page, int size, String sort, String order) {
         Page<Tariff> tariffPage = tariffRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.valueOf(order), sort)));
+        log.trace("Tariff page list has been fetched");
         return tariffPage.map(tariffMapper::toDto);
     }
 
     @Override
     public List<TariffDto> getAll() {
         List<Tariff> tariffList = tariffRepository.findAll();
+        log.trace("Tariff list has been fetched");
         return tariffMapper.toDtoList(tariffList);
     }
 
     @Override
     public TariffDto findById(Long id) {
         Tariff tariff = tariffRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+        log.trace("Tariff with id: " + id + " has been fetched");
         return tariffMapper.toDto(tariff);
     }
 
     @Override
     public TariffDto create(TariffDto tariffDto) {
         Tariff tariff = tariffRepository.save(tariffMapper.toEntity(tariffDto));
+        log.info("Tariff has been created:" + tariff);
         return tariffMapper.toDto(tariff);
     }
 
@@ -76,6 +82,7 @@ public class TariffServiceImpl implements TariffService {
         Tariff tariffFromDb = tariffRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
         BeanUtils.copyProperties(tariffMapper.toEntity(tariffDto), tariffFromDb, "id");
         Tariff tariff = tariffRepository.save(tariffFromDb);
+        log.info("Tariff has been updated:" + tariff);
         return tariffMapper.toDto(tariff);
     }
 
@@ -83,17 +90,20 @@ public class TariffServiceImpl implements TariffService {
     public void delete(Long id) {
         Tariff tariff = tariffRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
         tariffRepository.delete(tariff);
+        log.info("Tariff has been deleted:" + tariff);
     }
 
     @Override
     public List<TariffDto> getTariffListByServiceId(Long id) {
         List<Tariff> tariffList = tariffRepository.findByServiceId(id);
+        log.trace("Tariff list has been fetched by service id: " + id);
         return tariffMapper.toDtoList(tariffList);
     }
 
     @Override
     public List<TariffDto> getTariffListByUserId(Long id) {
         List<Tariff> tariffList = tariffRepository.findByUserId(id);
+        log.trace("Tariff list has been fetched by user id: " + id);
         return tariffMapper.toDtoList(tariffList);
     }
 
