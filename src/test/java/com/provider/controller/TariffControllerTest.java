@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(TariffController.class) //Annotation that can be used for a Spring MVC test that focuses only on Spring MVC components.
 class TariffControllerTest {
 
-    @Autowired //mock will replace any existing bean of the same type in the application context.
+    @MockBean //mock will replace any existing bean of the same type in the application context.
     TariffService tariffService;
 
     @MockBean

@@ -5,10 +5,12 @@ import com.provider.entity.Tariff;
 import com.provider.mapper.TariffMapper;
 import com.provider.security.JwtProvider;
 import com.provider.service.TariffService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Description;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -108,6 +110,7 @@ public class TariffController {
     }
 
     @PostMapping("/order")
+    @Operation(summary = "Create an user's order from the tariff list")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201"),
             @ApiResponse(responseCode = "402"),
