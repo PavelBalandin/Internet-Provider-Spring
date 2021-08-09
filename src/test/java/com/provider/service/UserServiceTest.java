@@ -1,4 +1,4 @@
-package com.provider;
+package com.provider.service;
 
 import com.provider.dto.UserDto;
 import com.provider.entity.Role;
@@ -52,9 +52,31 @@ public class UserServiceTest {
 
     @Test
     void getAll() {
+        List<Role> roleList = new ArrayList<>();
+
+        User user = User.builder()
+                .id(1L)
+                .login("login")
+                .firstName("first")
+                .lastName("last")
+                .roleList(roleList)
+                .status(new Status())
+                .build();
+
+        UserDto userDto = UserDto.builder()
+                .id(1L)
+                .login("login")
+                .firstName("first")
+                .lastName("last")
+                .roleList(roleList)
+                .status(new Status())
+                .build();
+
         List<UserDto> usersExpected = new ArrayList<>();
+        usersExpected.add(userDto);
 
         List<User> userList = new ArrayList<>();
+        userList.add(user);
         when(userRepository.findAll()).thenReturn(userList);
 
         List<UserDto> usersActual = subject.getAll();

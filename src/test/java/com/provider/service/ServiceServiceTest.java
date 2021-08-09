@@ -1,4 +1,4 @@
-package com.provider;
+package com.provider.service;
 
 import com.provider.dto.ServiceDto;
 import com.provider.entity.Service;
@@ -34,8 +34,11 @@ public class ServiceServiceTest {
     @Test
     void findAll() {
         List<ServiceDto> servicesExpected = new ArrayList<>();
+        servicesExpected.add(ServiceDto.builder().id(1L).name("Service").build());
 
         List<Service> serviceList = new ArrayList<>();
+        serviceList.add(Service.builder().id(1L).name("Service").build());
+
         when(serviceRepository.findAll()).thenReturn(serviceList);
 
         List<ServiceDto> servicesActual = subject.getAll();

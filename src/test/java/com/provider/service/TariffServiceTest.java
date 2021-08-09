@@ -1,4 +1,4 @@
-package com.provider;
+package com.provider.service;
 
 import com.provider.dto.TariffDto;
 import com.provider.entity.*;
@@ -50,8 +50,25 @@ public class TariffServiceTest {
     @Test
     void findAll() {
         List<TariffDto> tariffsExpected = new ArrayList<>();
+        tariffsExpected.add(TariffDto.builder()
+                .id(1L)
+                .name("name")
+                .description("description")
+                .duration(30)
+                .price(BigDecimal.valueOf(100))
+                .service(Service.builder().id(1L).build())
+                .build());
 
         List<Tariff> tariffList = new ArrayList<>();
+        tariffList.add(Tariff.builder()
+                .id(1L)
+                .name("name")
+                .description("description")
+                .duration(30)
+                .price(BigDecimal.valueOf(100))
+                .service(Service.builder().id(1L).build())
+                .build());
+
         when(tariffRepository.findAll()).thenReturn(tariffList);
 
         List<TariffDto> tariffsActual = subject.getAll();

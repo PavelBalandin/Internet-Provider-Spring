@@ -1,7 +1,8 @@
-package com.provider;
+package com.provider.service;
 
 import com.provider.dto.PaymentDto;
 import com.provider.entity.Payment;
+import com.provider.entity.User;
 import com.provider.mapper.PaymentMapper;
 import com.provider.repository.PaymentRepository;
 import com.provider.service.PaymentService;
@@ -14,6 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,9 +39,13 @@ public class PaymentServiceTest {
 
     @Test
     void getByUserId() {
+        User user = new User();
         List<PaymentDto> paymentsExpected = new ArrayList<>();
+        paymentsExpected.add(PaymentDto.builder().id(1L).payment(BigDecimal.valueOf(100)).user(user).build());
 
         List<Payment> paymentList = new ArrayList<>();
+        paymentList.add(Payment.builder().id(1L).payment(BigDecimal.valueOf(100)).user(user).build());
+
         when(paymentRepository.findByUserId(1L)).thenReturn(paymentList);
 
         List<PaymentDto> paymentsActual = subject.getByUserId(1L);
@@ -48,9 +55,10 @@ public class PaymentServiceTest {
 
     @Test
     void save() {
-        PaymentDto paymentExpected = new PaymentDto();
+        User user = new User();
+        PaymentDto paymentExpected = PaymentDto.builder().id(1L).payment(BigDecimal.valueOf(100)).user(user).build();
 
-        Payment payment = new Payment();
+        Payment payment = Payment.builder().id(1L).payment(BigDecimal.valueOf(100)).user(user).build();
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
         PaymentDto paymentActual = subject.create(paymentExpected);
