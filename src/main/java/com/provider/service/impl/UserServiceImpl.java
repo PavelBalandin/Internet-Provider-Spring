@@ -11,6 +11,8 @@ import com.provider.mapper.UserMapper;
 import com.provider.repository.RoleRepository;
 import com.provider.repository.StatusRepository;
 import com.provider.repository.UserRepository;
+import com.provider.service.RoleService;
+import com.provider.service.StatusService;
 import com.provider.service.UserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
@@ -29,20 +31,20 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
 
     private final PasswordEncoder passwordEncoder;
 
-    private final StatusRepository statusRepository;
+    private final StatusService statusService;
 
     private final UserMapper userMapper;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, StatusRepository statusRepository, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, RoleService roleService, PasswordEncoder passwordEncoder, StatusService statusService, UserMapper userMapper) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+        this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
-        this.statusRepository = statusRepository;
+        this.statusService = statusService;
         this.userMapper = userMapper;
     }
 
@@ -65,25 +67,6 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
         log.trace("User has been fetched by id: " + id);
         return user;
-    }
-
-    @Override
-    public UserDto create(UserDto userDto) {
-        User user = userMapper.toEntity(userDto);
-        Role role = roleRepository.findByName("ROLE_USER").orElseThrow(ResourceNotFoundException::new);
-        Status status = statusRepository.findByName("ENABLED").orElseThrow(ResourceNotFoundException::new);
-        List<Role> roleList = new ArrayList<>();
-        roleList.add(role);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoleList(roleList);
-        user.setStatus(status);
-        try {
-            User createdUser = userRepository.save(user);
-            log.info("User has been registered. Login: " + user.getLogin());
-            return userMapper.toDto(createdUser);
-        } catch (DataIntegrityViolationException exception) {
-            throw new ResourcesAlreadyExistsException();
-        }
     }
 
     @Override
@@ -123,8 +106,8 @@ public class UserServiceImpl implements UserService {
     public UserDto signup(RegistrationRequest registrationRequest) {
         log.trace("User sign");
         User user = userMapper.registrationRequestToEntity(registrationRequest);
-        Role role = roleRepository.findByName("ROLE_USER").orElseThrow(ResourceNotFoundException::new);
-        Status status = statusRepository.findByName("ENABLED").orElseThrow(ResourceNotFoundException::new);
+        Role role = roleService.findByName("ROLE_USER");
+        Status status = statusService.findByName("ENABLED");
         List<Role> roleList = new ArrayList<>();
         roleList.add(role);
         user.setPassword(passwordEncoder.encode(user.getPassword()));

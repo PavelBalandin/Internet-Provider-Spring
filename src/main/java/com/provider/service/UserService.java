@@ -13,8 +13,6 @@ public interface UserService {
 
     User findUserById(Long id);
 
-    UserDto create(UserDto entity);
-
     UserDto update(UserDto entity, Long id);
 
     void delete(Long id);

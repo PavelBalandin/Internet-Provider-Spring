@@ -1,5 +1,6 @@
 package com.provider.service;
 
+import com.provider.dto.RegistrationRequest;
 import com.provider.dto.UserDto;
 import com.provider.entity.Role;
 import com.provider.entity.Status;
@@ -7,8 +8,6 @@ import com.provider.entity.User;
 import com.provider.exception.ResourceNotFoundException;
 import com.provider.exception.ResourcesAlreadyExistsException;
 import com.provider.mapper.UserMapper;
-import com.provider.repository.RoleRepository;
-import com.provider.repository.StatusRepository;
 import com.provider.repository.UserRepository;
 import com.provider.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,9 +34,9 @@ public class UserServiceTest {
     @Mock
     UserRepository userRepository;
     @Mock
-    RoleRepository roleRepository;
+    RoleService roleService;
     @Mock
-    StatusRepository statusRepository;
+    StatusService statusService;
     @Mock
     PasswordEncoder passwordEncoder;
 
@@ -45,7 +44,7 @@ public class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        subject = new UserServiceImpl(userRepository, roleRepository, passwordEncoder, statusRepository, new UserMapper());
+        subject = new UserServiceImpl(userRepository, roleService, passwordEncoder, statusService, new UserMapper());
     }
 
     @Test
@@ -141,26 +140,26 @@ public class UserServiceTest {
     @Test
     void create() {
         UserDto userExpected = new UserDto();
-
+        RegistrationRequest registrationRequest = new RegistrationRequest();
         User user = new User();
         when(userRepository.save(any(User.class))).thenReturn(user);
-        when(roleRepository.findByName(any(String.class))).thenReturn(Optional.of(new Role()));
-        when(statusRepository.findByName(any(String.class))).thenReturn(Optional.of(new Status()));
+        when(roleService.findByName(any(String.class))).thenReturn(new Role());
+        when(statusService.findByName(any(String.class))).thenReturn(new Status());
 
-        UserDto userActual = subject.create(userExpected);
+        UserDto userActual = subject.signup(registrationRequest);
 
         assertEquals(userExpected, userActual);
     }
 
     @Test
     void shouldThrowExceptionWhenTryCreateAlreadyExistEntity() {
-        UserDto userExpected = new UserDto();
+        RegistrationRequest registrationRequest = new RegistrationRequest();
 
         when(userRepository.save(any(User.class))).thenThrow(DataIntegrityViolationException.class);
-        when(roleRepository.findByName(any(String.class))).thenReturn(Optional.of(new Role()));
-        when(statusRepository.findByName(any(String.class))).thenReturn(Optional.of(new Status()));
+        when(roleService.findByName(any(String.class))).thenReturn(new Role());
+        when(statusService.findByName(any(String.class))).thenReturn(new Status());
 
-        assertThrows(ResourcesAlreadyExistsException.class, () -> subject.create(userExpected));
+        assertThrows(ResourcesAlreadyExistsException.class, () -> subject.signup(registrationRequest));
     }
 
     @Test
