@@ -3,7 +3,6 @@ package com.provider.service;
 import com.provider.dto.UserDto;
 import com.provider.entity.Role;
 import com.provider.entity.Status;
-import com.provider.entity.Tariff;
 import com.provider.entity.User;
 import com.provider.exception.ResourceNotFoundException;
 import com.provider.exception.ResourcesAlreadyExistsException;
@@ -11,7 +10,6 @@ import com.provider.mapper.UserMapper;
 import com.provider.repository.RoleRepository;
 import com.provider.repository.StatusRepository;
 import com.provider.repository.UserRepository;
-import com.provider.service.UserService;
 import com.provider.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -91,7 +89,7 @@ public class UserServiceTest {
         User user = new User();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        UserDto userActual = subject.findById(1L);
+        UserDto userActual = subject.findUserDtoById(1L);
 
         assertEquals(userExpected, userActual);
     }
@@ -99,7 +97,7 @@ public class UserServiceTest {
     @Test
     void shouldThrowExceptionWhenUserNotFoundById() {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> subject.findById(1L));
+        assertThrows(ResourceNotFoundException.class, () -> subject.findUserDtoById(1L));
     }
 
     @Test

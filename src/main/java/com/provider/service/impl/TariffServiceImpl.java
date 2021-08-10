@@ -6,11 +6,11 @@ import com.provider.exception.NotEnoughFundsException;
 import com.provider.exception.ResourceNotFoundException;
 import com.provider.exception.ResourcesAlreadyExistsException;
 import com.provider.mapper.TariffMapper;
-import com.provider.repository.PaymentRepository;
 import com.provider.repository.TariffRepository;
 import com.provider.repository.TariffUserRepository;
-import com.provider.repository.UserRepository;
+import com.provider.service.PaymentService;
 import com.provider.service.TariffService;
+import com.provider.service.UserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,20 +32,20 @@ public class TariffServiceImpl implements TariffService {
 
     private final TariffRepository tariffRepository;
 
-    private final UserRepository userRepository;
-
-    private final PaymentRepository paymentRepository;
-
     private final TariffUserRepository tariffUserRepository;
+
+    private final UserService userService;
+
+    private final PaymentService paymentService;
 
     private final TariffMapper tariffMapper;
 
     @Autowired
-    public TariffServiceImpl(TariffRepository tariffRepository, UserRepository userRepository, PaymentRepository paymentRepository, TariffUserRepository tariffUserRepository, TariffMapper tariffMapper) {
+    public TariffServiceImpl(TariffRepository tariffRepository, TariffUserRepository tariffUserRepository, UserService userService, PaymentService paymentService, TariffMapper tariffMapper) {
         this.tariffRepository = tariffRepository;
-        this.userRepository = userRepository;
-        this.paymentRepository = paymentRepository;
         this.tariffUserRepository = tariffUserRepository;
+        this.userService = userService;
+        this.paymentService = paymentService;
         this.tariffMapper = tariffMapper;
     }
 
@@ -110,9 +110,9 @@ public class TariffServiceImpl implements TariffService {
     @Transactional
     public BigDecimal makeOrder(Long id, List<TariffDto> tariffDtoList) {
         List<Tariff> tariffList = tariffMapper.toEntityList(tariffDtoList);
-        User user = userRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+        User user = userService.findUserById(id);
         BigDecimal tariffSum = tariffRepository.findTariffsSum(tariffList.stream().map(Tariff::getId).collect(Collectors.toList()));
-        BigDecimal userSum = paymentRepository.getTotalUserSum(id);
+        BigDecimal userSum = paymentService.getTotalUserSum(id);
         List<Tariff> userTariffs = tariffRepository.findByUserId(user.getId());
         if (userSum.compareTo(tariffSum) >= 0) {
             if (Collections.disjoint(
@@ -130,7 +130,7 @@ public class TariffServiceImpl implements TariffService {
                 Payment payment = new Payment();
                 payment.setUser(user);
                 payment.setPayment(tariffSum.negate());
-                paymentRepository.save(payment);
+                paymentService.create(payment);
             } else {
                 throw new ResourcesAlreadyExistsException();
             }

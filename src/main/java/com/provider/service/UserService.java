@@ -9,7 +9,9 @@ import java.util.List;
 public interface UserService {
     List<UserDto> getAll();
 
-    UserDto findById(Long id);
+    UserDto findUserDtoById(Long id);
+
+    User findUserById(Long id);
 
     UserDto create(UserDto entity);
 

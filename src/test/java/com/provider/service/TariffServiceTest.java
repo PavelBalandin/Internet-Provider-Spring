@@ -10,7 +10,6 @@ import com.provider.repository.PaymentRepository;
 import com.provider.repository.TariffRepository;
 import com.provider.repository.TariffUserRepository;
 import com.provider.repository.UserRepository;
-import com.provider.service.TariffService;
 import com.provider.service.impl.TariffServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,9 +33,9 @@ public class TariffServiceTest {
     @Mock
     TariffRepository tariffRepository;
     @Mock
-    UserRepository userRepository;
+    UserService userService;
     @Mock
-    PaymentRepository paymentRepository;
+    PaymentService paymentService;
     @Mock
     TariffUserRepository tariffUserRepository;
 
@@ -44,7 +43,7 @@ public class TariffServiceTest {
 
     @BeforeEach
     void setUp() {
-        subject = new TariffServiceImpl(tariffRepository, userRepository, paymentRepository, tariffUserRepository, new TariffMapper());
+        subject = new TariffServiceImpl(tariffRepository, tariffUserRepository, userService, paymentService, new TariffMapper());
     }
 
     @Test
@@ -171,15 +170,15 @@ public class TariffServiceTest {
         orderTariffList.add(TariffDto.builder().id(2L).build());
         orderTariffList.add(TariffDto.builder().id(3L).build());
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(User.builder().id(1L).build()));
+        when(userService.findUserById(1L)).thenReturn(User.builder().id(1L).build());
         when(tariffRepository.findTariffsSum(any())).thenReturn(BigDecimal.valueOf(400));
-        when(paymentRepository.getTotalUserSum(1L)).thenReturn(BigDecimal.valueOf(500));
+        when(paymentService.getTotalUserSum(1L)).thenReturn(BigDecimal.valueOf(500));
         when(tariffRepository.findByUserId(1L)).thenReturn(userTariffList);
 
         assertEquals(BigDecimal.valueOf(100), subject.makeOrder(1L, orderTariffList));
 
         verify(tariffUserRepository, times(3)).save(any(TariffUser.class));
-        verify(paymentRepository, times(1)).save(any(Payment.class));
+        verify(paymentService, times(1)).create(any(Payment.class));
     }
 
     @Test
@@ -190,9 +189,9 @@ public class TariffServiceTest {
         orderTariffList.add(TariffDto.builder().id(2L).build());
         orderTariffList.add(TariffDto.builder().id(3L).build());
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(User.builder().id(1L).build()));
+        when(userService.findUserById(1L)).thenReturn(User.builder().id(1L).build());
         when(tariffRepository.findTariffsSum(any())).thenReturn(BigDecimal.valueOf(600));
-        when(paymentRepository.getTotalUserSum(1L)).thenReturn(BigDecimal.valueOf(500));
+        when(paymentService.getTotalUserSum(1L)).thenReturn(BigDecimal.valueOf(500));
         when(tariffRepository.findByUserId(1L)).thenReturn(userTariffList);
 
         assertThrows(NotEnoughFundsException.class, () -> subject.makeOrder(1L, orderTariffList));
@@ -207,9 +206,9 @@ public class TariffServiceTest {
         orderTariffList.add(TariffDto.builder().id(2L).build());
         orderTariffList.add(TariffDto.builder().id(3L).build());
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(User.builder().id(1L).build()));
+        when(userService.findUserById(1L)).thenReturn(User.builder().id(1L).build());
         when(tariffRepository.findTariffsSum(any())).thenReturn(BigDecimal.valueOf(400));
-        when(paymentRepository.getTotalUserSum(1L)).thenReturn(BigDecimal.valueOf(500));
+        when(paymentService.getTotalUserSum(1L)).thenReturn(BigDecimal.valueOf(500));
         when(tariffRepository.findByUserId(1L)).thenReturn(userTariffList);
 
         assertThrows(ResourcesAlreadyExistsException.class, () -> subject.makeOrder(1L, orderTariffList));

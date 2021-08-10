@@ -54,10 +54,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto findById(Long id) {
+    public UserDto findUserDtoById(Long id) {
         User user = userRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
         log.trace("User has been fetched by id: " + id);
         return userMapper.toDto(user);
+    }
+
+    @Override
+    public User findUserById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+        log.trace("User has been fetched by id: " + id);
+        return user;
     }
 
     @Override

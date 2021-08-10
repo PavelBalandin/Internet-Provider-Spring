@@ -1,9 +1,7 @@
 package com.provider.controller;
 
 import com.provider.dto.PaymentDto;
-import com.provider.entity.Payment;
 import com.provider.entity.User;
-import com.provider.mapper.PaymentMapper;
 import com.provider.security.JwtProvider;
 import com.provider.service.PaymentService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -50,6 +48,6 @@ public class PaymentController {
     public ResponseEntity<PaymentDto> create(@Valid @RequestBody PaymentDto paymentDto, @RequestHeader(name = "Authorization") String token) {
         log.trace("Creating payment");
         paymentDto.setUser(User.builder().id(jwtProvider.getUserIdFromToken(token)).build());
-        return new ResponseEntity<>(paymentService.create(paymentDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(paymentService.createFromDto(paymentDto), HttpStatus.CREATED);
     }
 }

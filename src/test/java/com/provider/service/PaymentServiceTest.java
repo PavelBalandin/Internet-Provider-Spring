@@ -5,18 +5,14 @@ import com.provider.entity.Payment;
 import com.provider.entity.User;
 import com.provider.mapper.PaymentMapper;
 import com.provider.repository.PaymentRepository;
-import com.provider.service.PaymentService;
 import com.provider.service.impl.PaymentServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +57,7 @@ public class PaymentServiceTest {
         Payment payment = Payment.builder().id(1L).payment(BigDecimal.valueOf(100)).user(user).build();
         when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
-        PaymentDto paymentActual = subject.create(paymentExpected);
+        PaymentDto paymentActual = subject.createFromDto(paymentExpected);
 
         assertEquals(paymentExpected, paymentActual);
     }
