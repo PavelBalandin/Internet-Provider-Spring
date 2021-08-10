@@ -6,10 +6,8 @@ import com.provider.exception.NotEnoughFundsException;
 import com.provider.exception.ResourceNotFoundException;
 import com.provider.exception.ResourcesAlreadyExistsException;
 import com.provider.mapper.TariffMapper;
-import com.provider.repository.PaymentRepository;
 import com.provider.repository.TariffRepository;
 import com.provider.repository.TariffUserRepository;
-import com.provider.repository.UserRepository;
 import com.provider.service.impl.TariffServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class TariffServiceTest {
+class TariffServiceTest {
 
     @Mock
     TariffRepository tariffRepository;
