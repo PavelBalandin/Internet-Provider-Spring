@@ -22,7 +22,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Role findByName(String name) {
         Role role = roleRepository.findByName(name).orElseThrow(ResourceNotFoundException::new);
-        log.trace("Found role in DB: " + role);
+        log.trace("Found role in DB: " + role.getName());
         return role;
     }
 }

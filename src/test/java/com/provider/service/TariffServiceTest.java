@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ class TariffServiceTest {
 
     @BeforeEach
     void setUp() {
-        subject = new TariffServiceImpl(tariffRepository, tariffUserRepository, userService, paymentService, new TariffMapper());
+        subject = new TariffServiceImpl(tariffRepository, tariffUserRepository, userService, paymentService, new TariffMapper(new ModelMapper()));
     }
 
     @Test

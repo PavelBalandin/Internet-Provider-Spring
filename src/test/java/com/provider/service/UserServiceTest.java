@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,7 +45,7 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        subject = new UserServiceImpl(userRepository, roleService, passwordEncoder, statusService, new UserMapper());
+        subject = new UserServiceImpl(userRepository, roleService, passwordEncoder, statusService, new UserMapper(new ModelMapper()));
     }
 
     @Test

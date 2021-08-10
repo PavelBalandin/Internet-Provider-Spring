@@ -22,7 +22,7 @@ public class StatusServiceImpl implements StatusService {
     @Override
     public Status findByName(String name) {
         Status status = statusRepository.findByName(name).orElseThrow(ResourceNotFoundException::new);
-        log.trace("Found status in DB: " + status);
+        log.trace("Found status in DB: " + status.getName());
         return status;
     }
 }

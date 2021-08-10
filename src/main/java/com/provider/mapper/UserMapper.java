@@ -3,6 +3,8 @@ package com.provider.mapper;
 import com.provider.dto.RegistrationRequest;
 import com.provider.dto.UserDto;
 import com.provider.entity.User;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,28 +12,20 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserMapper {
-    public UserDto toDto(User user) {
-        UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setLogin(user.getLogin());
-        userDto.setFirstName(user.getFirstName());
-        userDto.setLastName(user.getLastName());
-        userDto.setRoleList(user.getRoleList());
-        userDto.setStatus(user.getStatus());
 
-        return userDto;
+    private final ModelMapper modelMapper;
+
+    @Autowired
+    public UserMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
+
+    public UserDto toDto(User user) {
+        return modelMapper.map(user, UserDto.class);
     }
 
     public User toEntity(UserDto userDto) {
-        User user = new User();
-        user.setId(userDto.getId());
-        user.setLogin(userDto.getLogin());
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setRoleList(userDto.getRoleList());
-        user.setStatus(userDto.getStatus());
-
-        return user;
+        return modelMapper.map(userDto, User.class);
     }
 
     public List<UserDto> toDtoList(List<User> userList) {
@@ -39,12 +33,6 @@ public class UserMapper {
     }
 
     public User registrationRequestToEntity(RegistrationRequest registrationRequest) {
-        User user = new User();
-        user.setLogin(registrationRequest.getLogin());
-        user.setFirstName(registrationRequest.getFirstName());
-        user.setLastName(registrationRequest.getLastName());
-        user.setPassword(registrationRequest.getPassword());
-
-        return user;
+        return modelMapper.map(registrationRequest, User.class);
     }
 }

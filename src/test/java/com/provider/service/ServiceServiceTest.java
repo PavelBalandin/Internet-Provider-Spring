@@ -4,13 +4,13 @@ import com.provider.dto.ServiceDto;
 import com.provider.entity.Service;
 import com.provider.mapper.ServiceMapper;
 import com.provider.repository.ServiceRepository;
-import com.provider.service.ServiceService;
 import com.provider.service.impl.ServiceServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ class ServiceServiceTest {
 
     @BeforeEach
     void setUp() {
-        subject = new ServiceServiceImpl(serviceRepository, new ServiceMapper());
+        subject = new ServiceServiceImpl(serviceRepository, new ServiceMapper(new ModelMapper()));
     }
 
     @Test

@@ -73,7 +73,7 @@ public class TariffServiceImpl implements TariffService {
     @Override
     public TariffDto create(TariffDto tariffDto) {
         Tariff tariff = tariffRepository.save(tariffMapper.toEntity(tariffDto));
-        log.info("Tariff has been created:" + tariff);
+        log.info("Tariff has been created:" + tariff.getName());
         return tariffMapper.toDto(tariff);
     }
 
@@ -82,7 +82,7 @@ public class TariffServiceImpl implements TariffService {
         Tariff tariffFromDb = tariffRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
         BeanUtils.copyProperties(tariffMapper.toEntity(tariffDto), tariffFromDb, "id");
         Tariff tariff = tariffRepository.save(tariffFromDb);
-        log.info("Tariff has been updated:" + tariff);
+        log.info("Tariff has been updated:" + tariff.getName());
         return tariffMapper.toDto(tariff);
     }
 
@@ -90,7 +90,7 @@ public class TariffServiceImpl implements TariffService {
     public void delete(Long id) {
         Tariff tariff = tariffRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
         tariffRepository.delete(tariff);
-        log.info("Tariff has been deleted:" + tariff);
+        log.info("Tariff has been deleted:" + tariff.getName());
     }
 
     @Override

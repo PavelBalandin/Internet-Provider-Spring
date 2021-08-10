@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ class PaymentServiceTest {
 
     @BeforeEach
     void setUp() {
-        subject = new PaymentServiceImpl(paymentRepository, new PaymentMapper());
+        subject = new PaymentServiceImpl(paymentRepository, new PaymentMapper(new ModelMapper()));
     }
 
     @Test

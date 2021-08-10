@@ -2,6 +2,8 @@ package com.provider.mapper;
 
 import com.provider.dto.TariffDto;
 import com.provider.entity.Tariff;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,28 +12,19 @@ import java.util.stream.Collectors;
 @Service
 public class TariffMapper {
 
-    public TariffDto toDto(Tariff tariff) {
-        TariffDto tariffDto = new TariffDto();
-        tariffDto.setId(tariff.getId());
-        tariffDto.setName(tariff.getName());
-        tariffDto.setDescription(tariff.getDescription());
-        tariffDto.setDuration(tariff.getDuration());
-        tariffDto.setPrice(tariff.getPrice());
-        tariffDto.setService(tariff.getService());
+    private final ModelMapper modelMapper;
 
-        return tariffDto;
+    @Autowired
+    public TariffMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
+
+    public TariffDto toDto(Tariff tariff) {
+        return modelMapper.map(tariff, TariffDto.class);
     }
 
     public Tariff toEntity(TariffDto tariffDto) {
-        Tariff tariff = new Tariff();
-        tariff.setId(tariffDto.getId());
-        tariff.setName(tariffDto.getName());
-        tariff.setDescription(tariffDto.getDescription());
-        tariff.setDuration(tariffDto.getDuration());
-        tariff.setPrice(tariffDto.getPrice());
-        tariff.setService(tariffDto.getService());
-
-        return tariff;
+        return modelMapper.map(tariffDto, Tariff.class);
     }
 
     public List<TariffDto> toDtoList(List<Tariff> tariffList) {
