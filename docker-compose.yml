@@ -1,0 +1,43 @@
+version: '3.7'
+services:
+  app:
+    container_name: internet-provider
+    image: internet-provider
+    build:
+      context: .
+    links:
+      - db
+    depends_on:
+      - db
+    ports:
+      - 8080:8080
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/internet_provider_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=validate
+      - JWT_SECRET=qwl3eab3fu8wegbks1djh3ak
+  db:
+    container_name: db
+    image: postgres-db
+    build:
+      context: ./sql
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=internet_provider_db
+  db_admin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - 12080:80
+    links:
+      - db
+    depends_on:
+      - db
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 30
