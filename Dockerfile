@@ -4,6 +4,8 @@ WORKDIR /usr/src/app
 
 COPY . .
 
+RUN chmod +x ./mvnw
+
 EXPOSE 8080
 
 RUN ./mvnw clean package
